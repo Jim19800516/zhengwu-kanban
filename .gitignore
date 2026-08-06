@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+data/
+deploy/
+*.py
+*.js
+*.txt
+*.json
+!package-hosting.json
+.DS_Store

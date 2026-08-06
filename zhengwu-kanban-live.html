@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>政务消息 · 全国政务信息聚合</title>
+<meta name="theme-color" content="#2c2c2c" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f7f5f2;--card-bg:#fff;--text-primary:#1a1a1a;--text-secondary:#5c5c5c;--text-tertiary:#949494;
+  --accent:#b71c1c;--accent-light:#d32f2f;--gold:#8d6e2c;
+  --border:rgba(0,0,0,.07);--border-light:rgba(0,0,0,.04);
+  --shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);
+  --shadow-hover:0 2px 8px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.08);
+  --radius:12px;--radius-sm:8px;
+  --chip-bg:#f0ede8;--chip-text:#4a4a4a;
+  --divider:rgba(0,0,0,.05);
+  --col-bg:rgba(0,0,0,.015);
+  --drag-overlay:rgba(183,28,28,.06);
+  --column-width:310px;
+  --accent-rgb:183,28,28;
+}
+.dark{
+  --bg:#121212;--card-bg:#1e1e1e;--text-primary:#e8e8e8;--text-secondary:#a0a0a0;--text-tertiary:#6e6e6e;
+  --accent:#ef5350;--accent-light:#e57373;--gold:#c9a84c;
+  --border:rgba(255,255,255,.08);--border-light:rgba(255,255,255,.04);
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3);
+  --shadow-hover:0 2px 8px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
+  --chip-bg:#2a2a2a;--chip-text:#c0c0c0;
+  --divider:rgba(255,255,255,.06);
+  --col-bg:rgba(255,255,255,.02);
+  --drag-overlay:rgba(239,83,80,.1);
+  --accent-rgb:239,83,80;
+}
+@media(prefers-color-scheme:dark){
+  :root:not(.light){
+    --bg:#121212;--card-bg:#1e1e1e;--text-primary:#e8e8e8;--text-secondary:#a0a0a0;--text-tertiary:#6e6e6e;
+    --accent:#ef5350;--accent-light:#e57373;--gold:#c9a84c;
+    --border:rgba(255,255,255,.08);--border-light:rgba(255,255,255,.04);
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3);
+    --shadow-hover:0 2px 8px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
+    --chip-bg:#2a2a2a;--chip-text:#c0c0c0;
+    --divider:rgba(255,255,255,.06);
+    --col-bg:rgba(255,255,255,.02);
+    --drag-overlay:rgba(239,83,80,.1);
+    --accent-rgb:239,83,80;
+  }
+}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue","PingFang SC","Noto Sans CJK SC","Microsoft YaHei","Source Han Sans CN",sans-serif;
+  background:var(--bg);color:var(--text-primary);line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px;letter-spacing:-.01em;
+  min-height:100vh;display:flex;flex-direction:column;
+  overscroll-behavior:none;
+}
+
+/* ========== Top Bar ========== */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(44,44,44,.97);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.08);padding:8px 16px;
+}
+.dark .topbar{background:rgba(22,22,22,.97);border-bottom-color:rgba(255,255,255,.06)}
+.light .topbar{background:rgba(44,44,44,.97)}
+body:not(.dark):not(.light) .topbar{background:rgba(44,44,44,.97)}
+.topbar-inner{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar-brand{font-size:18px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:.02em}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.55);white-space:nowrap;font-weight:400;max-width:300px;overflow:hidden;text-overflow:ellipsis}
+.topbar-date{font-size:12px;font-weight:500;color:rgba(255,255,255,.7);white-space:nowrap;margin-left:4px}
+.topbar-spacer{flex:1}
+.topbar-search{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;min-width:180px;transition:all .2s ease}
+.topbar-search:focus-within{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.4);box-shadow:0 0 0 3px rgba(255,255,255,.1)}
+.topbar-search svg{width:14px;height:14px;color:rgba(255,255,255,.6);flex-shrink:0}
+.topbar-search input{flex:1;border:none;outline:none;background:transparent;font-size:13px;color:#fff;font-family:inherit}
+.topbar-search input::placeholder{color:rgba(255,255,255,.4)}
+.topbar-search kbd{font-size:10px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.15);padding:2px 5px;border-radius:4px;font-family:inherit}
+.topbar-actions{display:flex;gap:4px}
+.btn-icon{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;color:rgba(255,255,255,.8);font-size:14px}
+.btn-icon:hover{background:rgba(255,255,255,.2);color:#fff}
+.btn-icon.active{background:#fff;border-color:#fff;color:var(--accent)}
+.btn-icon.active:hover{opacity:.9}
+
+/* ========== Stats Bar ========== */
+.stats-bar{padding:12px 16px 8px;max-width:1600px;margin:0 auto;width:100%}
+.stats-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.stat-chip{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s ease;display:block;text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.stat-chip::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:0;transition:opacity .2s ease}
+.stat-chip:hover{transform:translateY(-1px);box-shadow:var(--shadow-hover)}
+.stat-chip:hover::before{opacity:1}
+.stat-chip.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.2)}
+.stat-chip.active::before{opacity:1}
+.stat-icon{font-size:18px;display:block;margin-bottom:2px;line-height:1}
+.stat-count{font-size:18px;font-weight:700;color:var(--text-primary);line-height:1}
+.stat-label{font-size:10px;color:var(--text-tertiary);font-weight:500;margin-top:2px}
+
+/* ========== Kanban Board ========== */
+.kanban-wrap{flex:1;overflow:hidden;padding:0 12px 20px}
+.kanban-board{
+  display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;
+  padding-bottom:6px;height:calc(100vh - 160px);min-height:500px;
+  scroll-behavior:smooth;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  scroll-snap-type:x proximity;
+}
+.kanban-board::-webkit-scrollbar{height:5px}
+.kanban-board::-webkit-scrollbar-track{background:transparent}
+.kanban-board::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ========== Column ========== */
+.kanban-col{
+  flex:0 0 var(--column-width);display:flex;flex-direction:column;
+  background:var(--col-bg);border-radius:var(--radius);border:1px solid var(--border);
+  min-height:200px;transition:border-color .2s ease,box-shadow .2s ease;
+  scroll-snap-align:start;
+}
+.kanban-col.drag-over{border-color:var(--accent);box-shadow:0 0 0 2px var(--drag-overlay);background:var(--drag-overlay)}
+.kanban-col.collapsed{flex:0 0 52px}
+.col-header{
+  display:flex;align-items:center;gap:8px;padding:12px 12px 8px;
+  border-bottom:1px solid var(--divider);flex-shrink:0;cursor:pointer;user-select:none
+}
+.col-header:hover .col-title{color:var(--accent)}
+.col-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;color:#fff}
+.col-title{font-size:14px;font-weight:600;color:var(--text-primary);transition:color .2s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.col-count{font-size:11px;font-weight:600;color:var(--text-tertiary);background:var(--chip-bg);padding:2px 8px;border-radius:10px;margin-left:auto;flex-shrink:0}
+.col-collapse{width:20px;height:20px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s ease;font-size:11px}
+.col-collapse:hover{background:var(--chip-bg);color:var(--text-primary)}
+.collapsed .col-title,.collapsed .col-count{display:none}
+.collapsed .col-collapse{transform:rotate(-90deg)}
+
+/* ========== Cards Container ========== */
+.col-cards{
+  flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 8px;
+  display:flex;flex-direction:column;gap:6px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  min-height:40px;
+}
+.col-cards::-webkit-scrollbar{width:4px}
+.col-cards::-webkit-scrollbar-track{background:transparent}
+.col-cards::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.col-cards.empty::after{
+  content:"暂无数据";display:flex;align-items:center;justify-content:center;
+  height:50px;font-size:12px;color:var(--text-tertiary);
+  border:1px dashed var(--border);border-radius:var(--radius-sm);margin:4px;
+}
+.collapsed .col-cards{display:none}
+
+/* ========== Card ========== */
+.kanban-card{
+  background:var(--card-bg);border-radius:var(--radius-sm);padding:12px;
+  box-shadow:var(--shadow);cursor:grab;transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
+  position:relative;border:1px solid transparent;border-left:3px solid transparent;
+}
+.kanban-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px);border-left-color:var(--accent)}
+.kanban-card:active{cursor:grabbing}
+.kanban-card.dragging{opacity:.5;transform:scale(.96);box-shadow:none}
+.kanban-card.drag-target{border-color:var(--accent);box-shadow:0 0 0 2px var(--drag-overlay)}
+.kanban-card.filtered-out{display:none}
+.card-num{font-size:10px;font-weight:700;color:var(--accent);background:rgba(var(--accent-rgb),.08);display:inline-block;padding:1px 8px;border-radius:8px;margin-bottom:6px}
+.card-tag{font-size:9px;font-weight:600;color:#fff;display:inline-block;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.card-tag.hot{background:#e53935}
+.card-tag.new{background:#43a047}
+.card-tag.urgent{background:#ff8f00}
+.card-title{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.45;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-summary{font-size:11px;color:var(--text-secondary);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.card-source{font-size:10px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+.card-time{font-size:10px;color:var(--text-tertiary);white-space:nowrap;flex-shrink:0}
+.card-link{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--chip-bg);color:var(--accent);text-decoration:none;transition:all .2s ease;flex-shrink:0}
+.card-link:hover{background:var(--accent);color:#fff}
+.card-link svg{width:11px;height:11px}
+
+/* ========== 打虎台统计面板 ========== */
+.dahu-stat-panel{
+  background:linear-gradient(135deg,rgba(183,28,28,.08),rgba(183,28,28,.03));
+  border:1px solid rgba(183,28,28,.15);border-radius:var(--radius-sm);
+  padding:10px 12px;margin-bottom:6px;font-size:11px;
+}
+.dahu-stat-panel .stat-title{font-weight:600;color:var(--accent);margin-bottom:6px;font-size:12px;display:flex;align-items:center;gap:4px}
+.dahu-stat-panel .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.dahu-stat-panel .stat-item{display:flex;align-items:center;gap:4px}
+.dahu-stat-panel .stat-num{font-weight:700;color:var(--accent);font-size:13px}
+.dahu-stat-panel .stat-desc{color:var(--text-secondary);font-size:10px}
+.dahu-stat-panel .stat-update{color:var(--text-tertiary);font-size:9px;margin-top:6px;text-align:right}
+
+/* ========== Empty State ========== */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;color:var(--text-tertiary);gap:12px}
+.empty-state svg{width:48px;height:48px;opacity:.2}
+.empty-state .empty-title{font-size:16px;font-weight:600;color:var(--text-secondary)}
+.empty-state .empty-desc{font-size:13px}
+
+/* ========== Modal ========== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s ease;backdrop-filter:blur(4px)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card-bg);border-radius:var(--radius);padding:24px;max-width:480px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative}
+.modal-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:var(--chip-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all .2s ease;font-size:16px}
+.modal-close:hover{background:var(--accent);color:#fff}
+.modal-section{font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.modal-title{font-size:17px;font-weight:700;color:var(--text-primary);line-height:1.45;margin-bottom:10px}
+.modal-summary{font-size:13.5px;color:var(--text-secondary);line-height:1.7;margin-bottom:14px}
+.modal-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:11px;color:var(--text-tertiary);flex-wrap:wrap}
+.modal-link{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--accent);color:#fff;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;transition:all .2s ease}
+.modal-link:hover{opacity:.9;transform:translateY(-1px)}
+.modal-link svg{width:14px;height:14px}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ========== Toast ========== */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card-bg);border:1px solid var(--border);border-radius:20px;padding:10px 24px;font-size:13px;color:var(--text-primary);box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:300;opacity:0;transition:all .3s ease;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ========== Responsive ========== */
+@media(max-width:1200px){
+  :root{--column-width:280px}
+  .stats-grid{grid-template-columns:repeat(7,1fr);gap:4px}
+  .stat-chip{padding:8px 4px}.stat-label{font-size:9px}.stat-count{font-size:15px}
+}
+@media(max-width:900px){
+  :root{--column-width:260px}
+  .stats-grid{grid-template-columns:repeat(4,1fr);gap:4px}
+  .stats-grid .stat-chip:nth-child(n+5){display:none}
+  .kanban-board{height:calc(100vh - 190px)}
+  .topbar-search{min-width:120px}
+}
+@media(max-width:640px){
+  :root{--column-width:calc(100vw - 40px)}
+  .topbar{padding:8px 10px}
+  .topbar-inner{gap:6px}
+  .topbar-brand{font-size:15px}.topbar-sub{font-size:10px}
+  .topbar-search{min-width:100px;max-width:140px;padding:4px 10px}
+  .topbar-search kbd{display:none}
+  .stats-bar{padding:8px 10px 4px}
+  .stats-grid{display:flex;overflow-x:auto;gap:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .stats-grid::-webkit-scrollbar{display:none}
+  .stat-chip{flex:0 0 auto;min-width:70px;padding:8px 8px}
+  .stats-grid .stat-chip:nth-child(n+5){display:block}
+  .stat-icon{font-size:14px}.stat-count{font-size:14px}.stat-label{font-size:8px}
+  .kanban-wrap{padding:0 6px 16px}
+  .kanban-board{gap:10px;height:calc(100vh - 200px);padding:0 8px}
+  .col-header{padding:10px 10px 6px}
+  .col-icon{width:26px;height:26px;font-size:13px}
+  .col-title{font-size:13px}
+  .kanban-card{padding:10px}
+  .card-title{font-size:12px}
+  .modal{padding:16px}
+  .scroll-btn{display:none!important}
+  .dahu-stat-panel .stat-grid{grid-template-columns:1fr 1fr;font-size:10px}
+}
+@media(max-width:380px){
+  :root{--column-width:calc(100vw - 28px)}
+  .topbar-brand{font-size:14px}.topbar-sub{display:none}
+  .topbar-search{max-width:110px}
+  .btn-icon{width:28px;height:28px}
+}
+
+/* ========== Scroll Buttons ========== */
+.scroll-btn{position:fixed;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:var(--card-bg);border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;color:var(--text-secondary);transition:all .2s ease}
+.scroll-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:var(--shadow-hover)}
+.scroll-btn svg{width:14px;height:14px}
+.scroll-btn.left{left:4px}
+.scroll-btn.right{right:4px}
+
+/* ========== Animations ========== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.kanban-card{animation:fadeIn .25s ease both}
+.kanban-card:nth-child(1){animation-delay:0s}
+.kanban-card:nth-child(2){animation-delay:.02s}
+.kanban-card:nth-child(3){animation-delay:.04s}
+.kanban-card:nth-child(4){animation-delay:.06s}
+.kanban-card:nth-child(5){animation-delay:.08s}
+.kanban-card:nth-child(6){animation-delay:.1s}
+.kanban-card:nth-child(7){animation-delay:.12s}
+.kanban-card:nth-child(8){animation-delay:.14s}
+.kanban-card:nth-child(9){animation-delay:.16s}
+.kanban-card:nth-child(10){animation-delay:.18s}
+.kanban-card:nth-child(n+11){animation-delay:.2s}
+
+/* ========== Footer ========== */
+.kanban-footer{text-align:center;padding:10px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border);flex-shrink:0}
+.kanban-footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-brand">&#x1F4F0; 政务消息</span>
+    <span class="topbar-sub">所有新闻均抓取自国家政务公开权威网站</span>
+    <span class="topbar-date" id="topbarDate">2026年8月6日</span>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-search">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="搜索标题或来源..." enterkeyhint="search">
+      <kbd id="searchCount">0</kbd>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-icon" id="btnRefresh" title="刷新数据">&#8635;</button>
+      <button class="btn-icon" id="btnExpand" title="全部展开">&#9650;</button>
+      <button class="btn-icon" id="btnCollapse" title="全部折叠">&#8801;</button>
+      <button class="btn-icon" id="btnDark" title="切换深色模式">
+        <svg viewBox="0 0 16 16" fill="none" width="15" height="15"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM2 8a6 6 0 016-6v12a6 6 0 01-6-6z" stroke="currentColor" stroke-width="1.5" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-grid" id="statsGrid"></div>
+</div>
+
+<div class="kanban-wrap">
+  <div class="kanban-board" id="kanbanBoard"></div>
+</div>
+
+<div class="kanban-footer">
+  数据来源：中央纪委国家监委、新华网、人民网、各省市政府网站等权威公开渠道 &nbsp;|&nbsp; 更新时间：<span id="updateTime">--</span>
+</div>
+
+<button class="scroll-btn left" id="scrollLeft" aria-label="向左滚动">
+  <svg viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<button class="scroll-btn right" id="scrollRight" aria-label="向右滚动">
+  <svg viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-section" id="modalSection"></div>
+    <h2 class="modal-title" id="modalTitle"></h2>
+    <p class="modal-summary" id="modalSummary"></p>
+    <div class="modal-meta">
+      <span id="modalSource"></span>
+      <span id="modalTime"></span>
+    </div>
+    <div class="modal-actions">
+      <a class="modal-link" id="modalLink" href="#" target="_blank" rel="noopener">
+        查看原文 <svg viewBox="0 0 14 14" fill="none"><path d="M5 2H11.5V8.5M11.5 2L5 8.5M11.5 2H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <div class="btn-move" id="btnDelete" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:16px;border:1px solid rgba(229,57,53,.4);background:transparent;color:#e53935;font-size:12px;cursor:pointer;transition:all .2s ease;font-family:inherit">&#10005; 隐藏</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== Data ==========
+// __KANBAN_DATA_START__
+const SECTIONS = [
+  {
+    "id": "dahu",
+    "label": "打虎台",
+    "icon": "🐯",
+    "color": "#b71c1c",
+    "items": [
+      {
+        "id": 2001,
+        "title": "水利部原党组成员、副部长田学斌被开除党籍和公职",
+        "summary": "田学斌大搞权钱交易，利用职务便利为他人在公司上市、煤矿重组、项目审批等方面谋利，非法收受巨额财物",
+        "source": "中央纪委国家监委",
+        "time": "8月3日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2002,
+        "title": "西藏自治区人大常委会原副主任王峻被开除党籍和公职",
+        "summary": "王峻背离党中央对西藏生态环境保护和矿产资源开发要求，在矿产资源开发等方面为他人谋利并收受巨额财物",
+        "source": "中央纪委国家监委",
+        "time": "8月3日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2003,
+        "title": "中国再生资源开发集团原董事长邢宏伟被双开",
+        "summary": "靠企吃企，挪用公款营利，侵吞公共财物，滥用职权造成社有资产重大损失",
+        "source": "中央纪委国家监委",
+        "time": "8月3日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2004,
+        "title": "江西省发改委原党组成员、省粮食和物资储备局原党组书记路文革被双开",
+        "summary": "以权谋私，在融资贷款、项目承揽等方面为他人谋利，滥用职权致使国家利益遭受重大损失",
+        "source": "中央纪委国家监委",
+        "time": "8月4日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2005,
+        "title": "山西省退役军人事务厅原一级巡视员范波涛被开除党籍",
+        "summary": "经山西省纪委监委审查调查，范波涛严重违纪违法被开除党籍",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2006,
+        "title": "山西省朔州市委原常委、秘书长何向荣被双开",
+        "summary": "何向荣涉嫌严重违纪违法，被开除党籍和公职",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2007,
+        "title": "河北省生态环境厅原一级巡视员张贵金接受审查调查",
+        "summary": "张贵金涉嫌严重违纪违法，目前正接受河北省纪委监委纪律审查和监察调查",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2008,
+        "title": "广东省深圳市委原常委、统战部部长王强接受审查调查",
+        "summary": "王强涉嫌严重违纪违法，目前正接受广东省纪委监委纪律审查和监察调查",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2009,
+        "title": "安徽省合肥市政协原党组书记、主席董昭礼被开除党籍",
+        "summary": "经安徽省纪委监委审查调查，董昭礼严重违纪违法被开除党籍",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": []
+      },
+      {
+        "id": 2010,
+        "title": "甘肃省高级人民法院原副院长陈天雄被开除党籍",
+        "summary": "经甘肃省纪委监委审查调查，陈天雄严重违纪违法被开除党籍",
+        "source": "中央纪委国家监委",
+        "time": "8月5日",
+        "url": "https://www.ccdi.gov.cn/",
+        "tags": []
+      }
+    ],
+    "dahuStats": {
+      "total2026": 5845,
+      "shengbu": 24,
+      "tingju": 188,
+      "xianchu": 1290,
+      "others": 4343,
+      "updateDate": "2026年8月6日"
+    }
+  },
+  {
+    "id": "gaoshan",
+    "label": "高山流水",
+    "icon": "🏔",
+    "color": "#2e7d32",
+    "items": [
+      {
+        "id": 2101,
+        "title": "中共中央决定：罗文同志任河北省委委员、常委、书记",
+        "summary": "罗文此前任国家市场监督管理总局局长，倪岳峰同志不再担任河北省委书记，另有任用",
+        "source": "新华社",
+        "time": "8月1日",
+        "url": "https://www.xinhuanet.com/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2102,
+        "title": "贵州省发布省管干部任前公示：10名省管干部拟任新职",
+        "summary": "邓麟宇拟任省直单位正职，邓航拟提名遵义市人大主任，多名县委书记拟任市州常委",
+        "source": "中共贵州省委组织部",
+        "time": "8月3日",
+        "url": "https://www.gzzzb.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2103,
+        "title": "黑龙江省拟任职干部公示：9名干部拟任地级市副市长、常委等职",
+        "summary": "吕晓光拟提名为地级市副市长，刘鑫拟任地级市党委常委，范杰臣拟提名市法院院长",
+        "source": "中共黑龙江省委组织部",
+        "time": "8月3日",
+        "url": "https://www.hlj.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2104,
+        "title": "广西贺州：韦凤云代理贺州市人民政府市长",
+        "summary": "贺州市第五届人大常委会决定任命韦凤云为副市长、代理市长，接受彭代元辞去市长职务",
+        "source": "贺州市人大",
+        "time": "8月4日",
+        "url": "https://www.gxhzrd.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2105,
+        "title": "中共曲靖市委组织部干部任前公示",
+        "summary": "杨雄等9名同志拟任职务公示，涉及市直单位正处级领导、副县长等岗位",
+        "source": "曲靖发布",
+        "time": "8月6日",
+        "url": "https://www.qj.gov.cn/",
+        "tags": []
+      }
+    ]
+  },
+  {
+    "id": "zhengtou",
+    "label": "政投先机",
+    "icon": "🏗",
+    "color": "#1565c0",
+    "items": [
+      {
+        "id": 2201,
+        "title": "7550亿元中央预算内投资已基本下达完毕",
+        "summary": "国家发改委披露，全国六张网协同建设全面铺开，水网、能源网、算力网等关键领域项目有序推进",
+        "source": "国家发改委",
+        "time": "8月3日",
+        "url": "https://www.ndrc.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2202,
+        "title": "国务院核准8台核电新机组 总投资超1700亿元",
+        "summary": "浙江金七门二期、广东太平岭三期、辽宁庄河一期、山东莱阳一期共8台核电机组获批，为十五五首批获准核电项目",
+        "source": "国务院",
+        "time": "8月5日",
+        "url": "https://www.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2203,
+        "title": "中煤绿能商都县120万千瓦氢基绿色燃料项目获备案 投资24.26亿元",
+        "summary": "年产高纯度绿氢约5万吨，配套储能180MW/360MWh，计划2026年10月开工",
+        "source": "商都县发改委",
+        "time": "8月6日",
+        "url": "https://www.nmg.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2204,
+        "title": "央企重磅加码大湾区 91个重点合作项目涉及金额1813.2亿元",
+        "summary": "18个代表性项目集中签约556.2亿元，涵盖能源开发、大数据、交通物流、高端制造等领域",
+        "source": "国务院国资委",
+        "time": "8月1日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2205,
+        "title": "财政部、应急管理部紧急预拨3.3亿元中央自然灾害救灾资金",
+        "summary": "支持黑龙江、辽宁、吉林、重庆、四川、贵州等8省市开展抢险救灾工作",
+        "source": "财政部",
+        "time": "8月5日",
+        "url": "https://www.mof.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2206,
+        "title": "上半年地方国企完成固定资产投资2.6万亿元 利润8126.8亿元",
+        "summary": "各地监管企业当期利润总额达8126.8亿元，同比增幅7%",
+        "source": "国务院国资委",
+        "time": "8月4日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2207,
+        "title": "云南省发改委核准多项新能源项目 风电光伏集中获批",
+        "summary": "永宁风电场五期5.4万千瓦等新能源项目获省发改委核准批复",
+        "source": "云南省发改委",
+        "time": "8月6日",
+        "url": "https://www.yn.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tufa",
+    "label": "突发事件",
+    "icon": "⚠",
+    "color": "#e65100",
+    "items": [
+      {
+        "id": 6483,
+        "title": "国家防总、应急管理部针对浙江福建启动防汛防台风四级应急响应2026-08-06 17:51",
+        "summary": "",
+        "source": "应急管理部",
+        "time": "8月6日",
+        "url": "https://www.mem.gov.cn/xw/yjglbgzdt/202608/t20260806_679686.shtml",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2524,
+        "title": "国家防总办公室、应急管理部向新疆调拨中央抗旱物资支持做好抗旱减灾工作2026-08-05 14:09",
+        "summary": "",
+        "source": "应急管理部",
+        "time": "8月5日",
+        "url": "https://www.mem.gov.cn/xw/yjglbgzdt/202608/t20260805_679492.shtml",
+        "tags": []
+      },
+      {
+        "id": 1583,
+        "title": "国家防灾减灾救灾委员会启动国家四级救灾应急响应 应急管理部持续指导陕西做好洪涝灾害救助工作2026-08-05 15:27",
+        "summary": "",
+        "source": "应急管理部",
+        "time": "8月5日",
+        "url": "https://www.mem.gov.cn/xw/yjglbgzdt/202608/t20260805_679504.shtml",
+        "tags": []
+      },
+      {
+        "id": 2301,
+        "title": "中国气象局：8月将有2至3个台风登陆或明显影响我国 强度偏强",
+        "summary": "第13号台风白海豚将于8月9日前后在长江口到福建北部沿海登陆，存在较强台风北上影响北方风险",
+        "source": "中国气象局",
+        "time": "8月5日",
+        "url": "https://www.cma.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2302,
+        "title": "中央气象台发布暴雨黄色预警：多地大到暴雨 局地特大暴雨",
+        "summary": "陕西东南部、重庆、湖北、贵州等地有大暴雨，局地特大暴雨250-260毫米",
+        "source": "中央气象台",
+        "time": "8月4日",
+        "url": "https://www.cma.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2303,
+        "title": "水利部和中国气象局联合发布红色山洪灾害气象预警",
+        "summary": "四川东北部、重庆中部、陕西东南部局地发生山洪灾害可能性很大（红色预警）",
+        "source": "水利部",
+        "time": "8月3日",
+        "url": "https://www.mwr.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2304,
+        "title": "国家防减救灾委针对黑龙江启动国家四级救灾应急响应",
+        "summary": "近期严重洪涝灾害，应急管理部派出救灾工作组赴灾区一线实地查看灾情",
+        "source": "应急管理部",
+        "time": "8月5日",
+        "url": "https://www.mem.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2305,
+        "title": "黑龙江省嫩江支流甘河、松花江发生2026年第1号洪水",
+        "summary": "受上游来水影响，水利部发布洪水编号，沿江各省加强巡堤查险",
+        "source": "水利部",
+        "time": "8月2日",
+        "url": "https://www.mwr.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2306,
+        "title": "国家防总针对北京河北贵州三省市启动防汛四级应急响应",
+        "summary": "8月2日持续强降雨覆盖17省份，水利部发出靶向预警",
+        "source": "应急管理部",
+        "time": "8月3日",
+        "url": "https://www.mem.gov.cn/",
+        "tags": [
+          "urgent"
+        ]
+      },
+      {
+        "id": 2307,
+        "title": "水利部向14省份发出靶向预警 通报强降雨覆盖范围及风险点位",
+        "summary": "向山西、黑龙江、河南、湖北、湖南等14省份发出靶向预警，提醒做好安全度汛和灾害防御",
+        "source": "水利部",
+        "time": "8月5日",
+        "url": "https://www.mwr.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "guoqi",
+    "label": "国企新闻",
+    "icon": "🏭",
+    "color": "#283593",
+    "items": [
+      {
+        "id": 2401,
+        "title": "国务院国资委部署下半年六大重点任务：深化改革列为重中之重",
+        "summary": "央企负责人研讨班召开，将十五五规划编制落地与新一轮国企改革绑定为总抓手，确立先立后破实施节奏",
+        "source": "国务院国资委",
+        "time": "8月4日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2402,
+        "title": "上半年地方国企实现利润8126.8亿元 同比增长7%",
+        "summary": "各地监管企业固定资产投资达2.6万亿元，研发经费投入2693.6亿元",
+        "source": "国务院国资委",
+        "time": "8月4日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2403,
+        "title": "多家央企密集敲定下半年改革重点 中石化、国家管网等全力推进",
+        "summary": "中石化、国家管网、国家能源集团等部署提质增效，加快布局战略性新兴产业",
+        "source": "新华社",
+        "time": "8月5日",
+        "url": "https://www.xinhuanet.com/",
+        "tags": [
+          "hot"
+        ]
+      },
+      {
+        "id": 2404,
+        "title": "央企AI应用成果涌现：中国移动智算规模突破107EFLOPS",
+        "summary": "中国电子推出自研翎枢超节点，中国电信发布TeleAgent超级智能体",
+        "source": "科技日报",
+        "time": "8月4日",
+        "url": "https://www.stdaily.com/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2405,
+        "title": "北京市86家市属国企子企业综合改革试点全面推进",
+        "summary": "首批56家试点上半年利润276亿元达预期58%，京东方、北汽等科创成果涌现",
+        "source": "北京市国资委",
+        "time": "8月5日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2406,
+        "title": "中石化重组中国航油 完善可持续航空燃料产业链",
+        "summary": "央企战略性、专业化重组整合工作持续落地，生物航煤完成国产大飞机试飞",
+        "source": "中国石化",
+        "time": "8月4日",
+        "url": "https://www.sinopec.com/",
+        "tags": []
+      },
+      {
+        "id": 2407,
+        "title": "10余家央企集中启动总部组织架构改革",
+        "summary": "国家能源集团、中国移动等围绕新兴产业、核心主业优化组织架构",
+        "source": "经济参考报",
+        "time": "8月4日",
+        "url": "https://www.jjckb.cn/",
+        "tags": []
+      },
+      {
+        "id": 2408,
+        "title": "中国华能牵头制定全球首个电力储能超级电容器国际标准",
+        "summary": "绿色低碳赛道布局提速，央企持续攻克关键核心技术",
+        "source": "中国华能",
+        "time": "8月4日",
+        "url": "https://www.chng.com.cn/",
+        "tags": []
+      },
+      {
+        "id": 2409,
+        "title": "中国石化成功钻探国内最深地热科学探井 CCUS示范项目投产",
+        "summary": "自主研发生物航煤完成国产大飞机试飞，兼顾降碳减排与产业增效",
+        "source": "中国石化",
+        "time": "8月4日",
+        "url": "https://www.sinopec.com/",
+        "tags": [
+          "new"
+        ]
+      },
+      {
+        "id": 2410,
+        "title": "央企推进数字化：已累计布局超1200个应用场景 智能工厂突破2000家",
+        "summary": "多家央企牵头组建具身智能、轨道交通装备等产业共同体，生产设备数字化率提升至67%",
+        "source": "国务院国资委",
+        "time": "8月4日",
+        "url": "https://www.sasac.gov.cn/",
+        "tags": [
+          "new"
+        ]
+      }
+    ]
+  }
+];
+// __KANBAN_DATA_END__
+
+// ========== State ==========
+let boardData = [];
+let currentModalCard = null;
+const STORAGE_KEY = 'zhengwu_kanban_v2';
+
+function saveState(){
+  const state = boardData.map(col => ({
+    id: col.id,
+    collapsed: col.collapsed || false,
+    items: col.items.map(it => it.id)
+  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(!saved) return;
+    const savedMap = {};
+    saved.forEach(col => { savedMap[col.id] = col; });
+    boardData.forEach(col => {
+      if(savedMap[col.id]){
+        col.collapsed = savedMap[col.id].collapsed || false;
+        const order = savedMap[col.id].items || [];
+        const itemMap = {};
+        col.items.forEach(it => { itemMap[it.id] = it; });
+        col.items = order.map(id => itemMap[id]).filter(Boolean);
+        col.items.forEach(it => { delete itemMap[it.id]; });
+        const missing = Object.values(itemMap);
+        col.items = col.items.concat(missing);
+      }
+    });
+  }catch(e){}
+}
+
+function initBoard(){
+  boardData = SECTIONS.map(s => ({
+    ...s,
+    collapsed: false,
+    items: s.items.map(it => ({...it}))
+  }));
+  loadState();
+}
+
+// ========== Render ==========
+function renderStats(){
+  const grid = document.getElementById('statsGrid');
+  grid.innerHTML = boardData.map(col => `
+    <a class="stat-chip" data-col="${col.id}" href="#col-${col.id}">
+      <span class="stat-icon">${col.icon}</span>
+      <span class="stat-count">${col.items.length}</span>
+      <span class="stat-label">${col.label}</span>
+    </a>
+  `).join('');
+  grid.querySelectorAll('.stat-chip').forEach(chip => {
+    chip.addEventListener('click', e => {
+      e.preventDefault();
+      const colEl = document.getElementById('col-'+chip.dataset.col);
+      if(colEl) colEl.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    });
+  });
+}
+
+function renderBoard(){
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = boardData.map(col => `
+    <div class="kanban-col${col.collapsed?' collapsed':''}" id="col-${col.id}" data-col="${col.id}">
+      <div class="col-header" data-col="${col.id}">
+        <div class="col-icon" style="background:${col.color}">${col.icon}</div>
+        <span class="col-title">${col.label}</span>
+        <span class="col-count">${col.items.length}</span>
+        <button class="col-collapse" data-col="${col.id}">&#9660;</button>
+      </div>
+      <div class="col-cards${col.items.length===0?' empty':''}" data-col="${col.id}">
+        ${col.id === 'dahu' && col.dahuStats ? renderDahuStats(col.dahuStats) : ''}
+        ${col.items.map(it => renderCard(it, col.id)).join('')}
+      </div>
+    </div>
+  `).join('');
+  attachCardEvents();
+  attachColumnEvents();
+  renderStats();
+}
+
+function renderDahuStats(stats){
+  return `
+    <div class="dahu-stat-panel">
+      <div class="stat-title">&#x1F4CA; 2026年全国纪检监察机关处分人员统计</div>
+      <div class="stat-grid">
+        <div class="stat-item"><span class="stat-num">${stats.total2026}</span><span class="stat-desc">处分总人数</span></div>
+        <div class="stat-item"><span class="stat-num">${stats.shengbu}</span><span class="stat-desc">省部级</span></div>
+        <div class="stat-item"><span class="stat-num">${stats.tingju}</span><span class="stat-desc">厅局级</span></div>
+        <div class="stat-item"><span class="stat-num">${stats.xianchu}</span><span class="stat-desc">县处级</span></div>
+      </div>
+      <div class="stat-update">数据来源：中央纪委国家监委 &nbsp;|&nbsp; 截至 ${stats.updateDate}</div>
+    </div>
+  `;
+}
+
+function renderCard(it, colId){
+  const tags = (it.tags || []).map(t => {
+    if(t === 'hot') return '<span class="card-tag hot">热</span>';
+    if(t === 'new') return '<span class="card-tag new">新</span>';
+    if(t === 'urgent') return '<span class="card-tag urgent">急</span>';
+    return '';
+  }).join('');
+  return `
+    <div class="kanban-card" draggable="true" data-id="${it.id}" data-col="${colId}">
+      <div class="card-num">#${it.id}${tags}</div>
+      <div class="card-title">${escHtml(it.title)}</div>
+      ${it.summary?`<div class="card-summary">${escHtml(it.summary)}</div>`:''}
+      <div class="card-meta">
+        <span class="card-source">${escHtml(it.source)}</span>
+        <span class="card-time">${it.time||''}</span>
+        <a class="card-link" href="${escHtml(it.url||'#')}" target="_blank" rel="noopener" title="查看原文" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M4 1.5H10.5V8M10.5 1.5L4 8M10.5 1.5H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ========== Card Events ==========
+function attachCardEvents(){
+  document.querySelectorAll('.kanban-card').forEach(card => {
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+    card.addEventListener('click', e => {
+      if(e.target.closest('.card-link') || e.target.closest('.col-collapse')) return;
+      openModal(card);
+    });
+    // Touch support
+    card.addEventListener('touchstart', function(e){
+      if(e.target.closest('.card-link') || e.target.closest('.col-collapse')) return;
+      this._touchStartTime = Date.now();
+      this._touchStartY = e.touches[0].clientY;
+    }, {passive:false});
+    card.addEventListener('touchend', function(e){
+      const dt = Date.now() - (this._touchStartTime||0);
+      const dy = Math.abs((e.changedTouches[0]?.clientY||0) - (this._touchStartY||0));
+      if(dt < 300 && dy < 10 && !this.classList.contains('dragging')){
+        openModal(this);
+      }
+    });
+  });
+}
+
+function attachColumnEvents(){
+  document.querySelectorAll('.col-header').forEach(header => {
+    header.addEventListener('click', e => {
+      if(e.target.closest('.col-collapse')) return;
+      toggleColumn(header.dataset.col);
+    });
+  });
+  document.querySelectorAll('.col-collapse').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      toggleColumn(btn.dataset.col);
+    });
+  });
+  document.querySelectorAll('.col-cards').forEach(container => {
+    container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('dragleave', handleDragLeave);
+    container.addEventListener('drop', handleDrop);
+  });
+  document.querySelectorAll('.kanban-col').forEach(col => {
+    col.addEventListener('dragover', e => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+    col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+    col.addEventListener('drop', e => {
+      col.classList.remove('drag-over');
+      handleDrop(e);
+    });
+  });
+}
+
+// ========== Drag & Drop ==========
+let draggedCard = null;
+let sourceCol = null;
+
+function handleDragStart(e){
+  draggedCard = this;
+  sourceCol = this.dataset.col;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.id);
+  setTimeout(() => { if(draggedCard) draggedCard.style.opacity='0.4'; }, 0);
+}
+
+function handleDragEnd(e){
+  this.classList.remove('dragging');
+  this.style.opacity = '';
+  document.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  draggedCard = null;
+  sourceCol = null;
+  saveState();
+}
+
+function handleDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const container = this;
+  const after = getDragAfterElement(container, e.clientY);
+  document.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
+  if(after) after.classList.add('drag-target');
+}
+
+function handleDragLeave(e){
+  this.querySelectorAll('.drag-target').forEach(el => el.classList.remove('drag-target'));
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  const container = e.target.closest('.col-cards') || e.target.querySelector('.col-cards');
+  if(!container) return;
+  const targetCol = container.dataset.col;
+  const cardId = parseInt(e.dataTransfer.getData('text/plain'));
+  if(!cardId) return;
+
+  let cardData = null, srcColData = null;
+  for(const col of boardData){
+    const idx = col.items.findIndex(it => it.id === cardId);
+    if(idx !== -1){ cardData = col.items[idx]; srcColData = col; col.items.splice(idx,1); break; }
+  }
+  if(!cardData || !srcColData) return;
+
+  const dstColData = boardData.find(c => c.id === targetCol);
+  if(!dstColData) return;
+
+  const afterEl = getDragAfterElement(container, e.clientY);
+  if(afterEl){
+    const afterId = parseInt(afterEl.dataset.id);
+    const afterIdx = dstColData.items.findIndex(it => it.id === afterId);
+    dstColData.items.splice(afterIdx, 0, cardData);
+  } else {
+    dstColData.items.push(cardData);
+  }
+
+  renderBoard();
+  showToast(`${cardData.title.substring(0,18)}... → ${dstColData.label}`);
+  saveState();
+}
+
+function getDragAfterElement(container, y){
+  const draggableElements = [...container.querySelectorAll('.kanban-card:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height/2;
+    if(offset < 0 && offset > (closest?.offset || Number.NEGATIVE_INFINITY)){
+      return {offset, element:child};
+    }
+    return closest;
+  }, null)?.element;
+}
+
+// ========== Column Toggle ==========
+function toggleColumn(colId){
+  const col = boardData.find(c => c.id === colId);
+  if(!col) return;
+  col.collapsed = !col.collapsed;
+  renderBoard();
+  saveState();
+}
+
+// ========== Search ==========
+function filterCards(query){
+  query = query.toLowerCase().trim();
+  const countEl = document.getElementById('searchCount');
+  let totalVisible = 0;
+  document.querySelectorAll('.kanban-card').forEach(card => {
+    if(!query){ card.classList.remove('filtered-out'); totalVisible++; return; }
+    const title = card.querySelector('.card-title')?.textContent?.toLowerCase()||'';
+    const source = card.querySelector('.card-source')?.textContent?.toLowerCase()||'';
+    const summary = card.querySelector('.card-summary')?.textContent?.toLowerCase()||'';
+    if(title.includes(query) || source.includes(query) || summary.includes(query)){
+      card.classList.remove('filtered-out'); totalVisible++;
+    } else { card.classList.add('filtered-out'); }
+  });
+  countEl.textContent = totalVisible;
+  updateColumnCounts();
+}
+
+function updateColumnCounts(){
+  document.querySelectorAll('.kanban-col').forEach(col => {
+    const visibleCards = col.querySelectorAll('.kanban-card:not(.filtered-out)').length;
+    const countEl = col.querySelector('.col-count');
+    const container = col.querySelector('.col-cards');
+    if(countEl) countEl.textContent = visibleCards;
+    if(container) container.classList.toggle('empty', visibleCards === 0);
+  });
+}
+
+// ========== Modal ==========
+function openModal(cardEl){
+  const id = parseInt(cardEl.dataset.id);
+  const colId = cardEl.dataset.col;
+  let cardData = null;
+  for(const col of boardData){
+    const found = col.items.find(it => it.id === id);
+    if(found){ cardData = found; break; }
+  }
+  if(!cardData) return;
+  currentModalCard = {card:cardData, colId};
+  const colData = boardData.find(c => c.id === colId);
+  document.getElementById('modalSection').innerHTML = `${colData?.icon||''} ${colData?.label||''}`;
+  document.getElementById('modalTitle').textContent = cardData.title;
+  document.getElementById('modalSummary').textContent = cardData.summary||'暂无摘要';
+  document.getElementById('modalSource').textContent = '来源: '+(cardData.source||'');
+  document.getElementById('modalTime').textContent = cardData.time||'';
+  const link = document.getElementById('modalLink');
+  link.href = cardData.url||'#';
+  link.style.display = cardData.url ? '' : 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentModalCard = null;
+}
+
+function deleteCard(){
+  if(!currentModalCard) return;
+  const {card, colId} = currentModalCard;
+  const col = boardData.find(c => c.id === colId);
+  if(!col) return;
+  col.items = col.items.filter(it => it.id !== card.id);
+  closeModal();
+  renderBoard();
+  saveState();
+  showToast(`已隐藏: ${card.title.substring(0,16)}...`);
+}
+
+// ========== Toast ==========
+let toastTimer;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+// ========== Init ==========
+function initTopBar(){
+  document.getElementById('searchInput').addEventListener('input', e => filterCards(e.target.value));
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if(e.key === 'Escape'){ e.target.value=''; filterCards(''); e.target.blur(); }
+  });
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey||e.metaKey) && e.key === 'k'){ e.preventDefault(); document.getElementById('searchInput').focus(); }
+  });
+
+  document.getElementById('btnDark').addEventListener('click', () => {
+    const html = document.documentElement;
+    if(html.classList.contains('dark')){ html.classList.remove('dark'); html.classList.add('light'); }
+    else if(html.classList.contains('light')){ html.classList.remove('light'); }
+    else { html.classList.add('dark'); }
+  });
+
+  document.getElementById('btnExpand').addEventListener('click', () => {
+    boardData.forEach(c => c.collapsed = false);
+    renderBoard(); saveState();
+  });
+  document.getElementById('btnCollapse').addEventListener('click', () => {
+    boardData.forEach(c => c.collapsed = true);
+    renderBoard(); saveState();
+  });
+  document.getElementById('btnRefresh').addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    initBoard();
+    renderBoard();
+    filterCards(document.getElementById('searchInput').value);
+    showToast('已恢复默认数据');
+  });
+
+  const board = document.getElementById('kanbanBoard');
+  document.getElementById('scrollLeft').addEventListener('click', () => board.scrollBy({left:-350, behavior:'smooth'}));
+  document.getElementById('scrollRight').addEventListener('click', () => board.scrollBy({left:350, behavior:'smooth'}));
+
+  // Modal
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if(e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && document.getElementById('modalOverlay').classList.contains('open')) closeModal();
+  });
+  document.getElementById('btnDelete').addEventListener('click', deleteCard);
+}
+
+initBoard();
+renderBoard();
+initTopBar();
+filterCards('');
+
+// Set update time
+document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-CN', {hour12:false});
+</script>
+</body>
+</html>
