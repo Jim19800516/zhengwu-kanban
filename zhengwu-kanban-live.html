@@ -881,7 +881,7 @@ function renderCard(it, colId){
   }).join('');
   return `
     <div class="kanban-card" draggable="true" data-id="${it.id}" data-col="${colId}">
-      <div class="card-num">#${it.id}${tags}</div>
+      <div class="card-num">${tags}</div>
       <div class="card-title">${escHtml(it.title)}</div>
       ${it.summary?`<div class="card-summary">${escHtml(it.summary)}</div>`:''}
       <div class="card-meta">
