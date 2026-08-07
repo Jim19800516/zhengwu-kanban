@@ -19,7 +19,7 @@
   --radius:12px;--radius-sm:8px;
   --chip-bg:#f0ede8;--chip-text:#4a4a4a;
   --divider:rgba(0,0,0,.05);
-  --col-bg:rgba(0,0,0,.015);
+  --col-bg:linear-gradient(180deg,#f8f5f0 0%,#f2ede4 40%,#ede7db 100%);
   --drag-overlay:rgba(183,28,28,.06);
   --column-width:310px;
   --accent-rgb:183,28,28;
@@ -32,7 +32,7 @@
   --shadow-hover:0 2px 8px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
   --chip-bg:#2a2a2a;--chip-text:#c0c0c0;
   --divider:rgba(255,255,255,.06);
-  --col-bg:rgba(255,255,255,.02);
+  --col-bg:linear-gradient(180deg,#262320 0%,#2a2723 40%,#2d2a25 100%);
   --drag-overlay:rgba(239,83,80,.1);
   --accent-rgb:239,83,80;
 }
@@ -45,7 +45,7 @@
     --shadow-hover:0 2px 8px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
     --chip-bg:#2a2a2a;--chip-text:#c0c0c0;
     --divider:rgba(255,255,255,.06);
-    --col-bg:rgba(255,255,255,.02);
+    --col-bg:linear-gradient(180deg,#262320 0%,#2a2723 40%,#2d2a25 100%);
     --drag-overlay:rgba(239,83,80,.1);
     --accent-rgb:239,83,80;
   }
@@ -70,6 +70,8 @@ body{
 body:not(.dark):not(.light) .topbar{background:rgba(44,44,44,.97)}
 .topbar-inner{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .topbar-brand{font-size:20px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:.02em}
+.topbar-brand-group{display:flex;flex-direction:column;align-items:flex-start;gap:0px;line-height:1.2}
+.topbar-brand-group .topbar-sub{margin:0;line-height:1.2}
 .topbar-sub{font-size:13px;color:rgba(255,255,255,.55);white-space:nowrap;font-weight:400;max-width:300px;overflow:hidden;text-overflow:ellipsis}
 .topbar-date{font-size:14px;font-weight:500;color:rgba(255,255,255,.7);white-space:nowrap;margin-left:4px}
 .topbar-spacer{flex:1}
@@ -127,10 +129,12 @@ body:not(.dark):not(.light) .topbar{background:rgba(44,44,44,.97)}
 .col-header:hover .col-title{color:var(--accent)}
 .col-icon{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:#fff}
 .col-title{font-size:16px;font-weight:600;color:var(--text-primary);transition:color .2s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.col-title-group{display:flex;flex-direction:column;flex:1;min-width:0;gap:1px}
+.col-new-count{font-size:10px;font-weight:400;color:var(--accent);opacity:.7;white-space:nowrap}
 .col-count{font-size:13px;font-weight:600;color:var(--text-tertiary);background:var(--chip-bg);padding:2px 8px;border-radius:10px;margin-left:auto;flex-shrink:0}
 .col-collapse{width:22px;height:22px;border-radius:50%;border:none;background:transparent;cursor:pointer;color:var(--text-tertiary);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s ease;font-size:13px}
 .col-collapse:hover{background:var(--chip-bg);color:var(--text-primary)}
-.collapsed .col-title,.collapsed .col-count{display:none}
+.collapsed .col-title-group,.collapsed .col-count{display:none}
 .collapsed .col-collapse{transform:rotate(-90deg)}
 
 /* ========== Cards Container ========== */
@@ -289,8 +293,10 @@ body:not(.dark):not(.light) .topbar{background:rgba(44,44,44,.97)}
 
 <div class="topbar">
   <div class="topbar-inner">
-    <span class="topbar-brand">&#x1F4F0; 政务消息</span>
-    <span class="topbar-sub">所有新闻均抓取自国家政务公开权威网站</span>
+    <div class="topbar-brand-group">
+      <span class="topbar-brand">&#x1F4F0; 政务消息</span>
+      <span class="topbar-sub">所有新闻均抓取自国家政务公开权威网站</span>
+    </div>
     <span class="topbar-date" id="topbarDate">2026年8月7日</span>
     <div class="topbar-spacer"></div>
     <div class="topbar-search">
@@ -428,6 +434,42 @@ const SECTIONS = [
 let boardData = [];
 let currentModalCard = null;
 const STORAGE_KEY = 'zhengwu_kanban_v2';
+const MAX_DAYS = 2; // 最多显示2天内的新闻
+
+function parseTimeToDate(timeStr){
+  if(!timeStr) return null;
+  // "8月6日" format
+  let m = timeStr.match(/^(\d{1,2})月(\d{1,2})日/);
+  if(m){
+    const now = new Date();
+    return new Date(now.getFullYear(), parseInt(m[1])-1, parseInt(m[2]));
+  }
+  // "2026-08-06T10:00:00" ISO format
+  m = timeStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m){
+    return new Date(parseInt(m[1]), parseInt(m[2])-1, parseInt(m[3]));
+  }
+  return null;
+}
+
+function getToday(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+
+function isWithinDays(timeStr, days){
+  const d = parseTimeToDate(timeStr);
+  if(!d) return true; // keep items without parsable dates
+  const today = getToday();
+  const cutoff = new Date(today);
+  cutoff.setDate(cutoff.getDate() - days);
+  return d >= cutoff;
+}
+
+function countTodayItems(items){
+  const today = getToday();
+  return items.filter(it => {
+    const d = parseTimeToDate(it.time);
+    return d && d.getTime() >= today.getTime();
+  }).length;
+}
 
 function saveState(){
   const state = boardData.map(col => ({
@@ -462,7 +504,9 @@ function initBoard(){
   boardData = SECTIONS.map(s => ({
     ...s,
     collapsed: false,
-    items: s.items.map(it => ({...it}))
+    items: s.items
+      .map(it => ({...it}))
+      .filter(it => isWithinDays(it.time, MAX_DAYS))
   }));
   loadState();
 }
@@ -488,11 +532,16 @@ function renderStats(){
 
 function renderBoard(){
   const board = document.getElementById('kanbanBoard');
-  board.innerHTML = boardData.map(col => `
+  board.innerHTML = boardData.map(col => {
+    const todayCount = countTodayItems(col.items);
+    return `
     <div class="kanban-col${col.collapsed?' collapsed':''}" id="col-${col.id}" data-col="${col.id}">
       <div class="col-header" data-col="${col.id}">
         <div class="col-icon" style="background:${col.color}">${col.icon}</div>
-        <span class="col-title">${col.label}</span>
+        <div class="col-title-group">
+          <span class="col-title">${col.label}</span>
+          <span class="col-new-count">今日新增${todayCount}条</span>
+        </div>
         <span class="col-count">${col.items.length}</span>
         <button class="col-collapse" data-col="${col.id}">&#9660;</button>
       </div>
@@ -501,7 +550,7 @@ function renderBoard(){
         ${col.items.map(it => renderCard(it, col.id)).join('')}
       </div>
     </div>
-  `).join('');
+  `}).join('');
   attachCardEvents();
   attachColumnEvents();
   renderStats();
