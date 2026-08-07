@@ -7,7 +7,13 @@ sections = [
     {
         'id': 'dahu',
         'title': '打虎台',
-        'dahuStats': {'落马': 3, '双开': 4, '审查': 2},
+        'dahuStats': {
+            'total2026': 8,
+            'shengbu': 1,
+            'tingju': 2,
+            'xianchu': 5,
+            'updateDate': '2026年8月7日'
+        },
         'items': [
             {
                 'id': 'search_dahu_1',
