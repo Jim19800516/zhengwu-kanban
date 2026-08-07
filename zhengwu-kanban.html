@@ -390,6 +390,18 @@ const SECTIONS = [
     {id:1108,title:"中央军委举行晋升上将军衔仪式",summary:"中央军委主席习近平向晋升上将军衔的军官颁发命令状",source:"新华社",time:"8月1日",url:"https://www.xinhuanet.com/",tags:["hot"]},
     {id:1109,title:"中国证监会主要领导调整",summary:"国务院决定任命新任中国证券监督管理委员会主席",source:"新华社",time:"8月1日",url:"https://www.xinhuanet.com/",tags:["new"]},
   ]},
+  { id:"fuya",      label:"府衙招聘",   icon:"&#x1F4CB;", color:"#6a1b9a", items:[
+    {id:1200,title:"广东南粤集团有限公司二级企业总经理岗位市场化选聘公告",summary:"面向集团系统内外市场化选聘广东省人才市场有限公司总经理1名、南粤食品水产有限公司总经理1名",source:"广东省国资委",time:"8月6日",url:"https://gzw.gd.gov.cn/",tags:["hot"]},
+    {id:1201,title:"内蒙古交通集团朱雀资本控股有限公司副总经理公开招聘2人",summary:"面向社会公开招聘副总经理2名，实行任期制契约化管理，薪酬参照自治区国有股份制银行标准",source:"中公教育网",time:"8月5日",url:"https://www.offcn.com/gqzp/2026/0804/250992.html",tags:["new"]},
+    {id:1202,title:"中煤航测遥感集团2026年度管理岗公开招聘5人",summary:"隶属国务院国资委管理中国煤炭地质总局，面向社会招聘管理人才5名，报名时间8月3日至9日",source:"测绘之家",time:"8月5日",url:"https://www.163.com/dy/article/L3H54VCT05319UN7.html",tags:[]},
+    {id:1203,title:"中国资源循环集团塑料再生有限公司招聘管理人员2名",summary:"招聘科技规划与成果管理岗1名、直属企业副总经理1名，面向央国企及大型企业选聘",source:"高校人才网",time:"8月4日",url:"https://www.gaoxiaojob.com/announcement/detail/420049.html",tags:["new"]},
+    {id:1204,title:"钢研华普科技有限公司市场化公开选聘多孔业务总经理",summary:"中国钢研科技集团控股二级子公司，面向社会公开招聘多孔业务总经理1名，工作地点北京",source:"粉笔教育",time:"8月4日",url:"https://fenbi.com/page/exam-information-detail/467892322193408",tags:[]},
+    {id:1205,title:"深圳市国资委2026年公开选调公务员拟选调人员公示",summary:"深圳市国资委发布2026年公开选调公务员拟选调人员名单，公示接受社会各界监督",source:"深圳市国资委",time:"7月14日",url:"https://gzw.sz.gov.cn/",tags:[]},
+    {id:1206,title:"珠海市国资委2026年公开招聘合同制职员综合成绩及进入体检人员公告",summary:"珠海市国资委发布2026年公开招聘合同制职员综合成绩及体检名单，推进人事公开透明",source:"珠海市国资委",time:"6月20日",url:"https://www.zhuhai.gov.cn/gzw/",tags:[]},
+    {id:1207,title:"深圳市属国企2026年暑期实习实践活动正式启动",summary:"深圳市属国企组织开展2026年暑期实习实践活动，吸引优秀青年人才参与",source:"深圳市国资委",time:"7月14日",url:"https://gzw.sz.gov.cn/",tags:[]},
+    {id:1208,title:"广东省国资委招录2名公务员",summary:"广东省国资委面向社会公开招录公务员2名，欢迎符合条件人员报考",source:"广东省国资委",time:"1月8日",url:"https://gzw.gd.gov.cn/",tags:[]},
+    {id:1209,title:"国资小新：国企招聘信息汇总",summary:"国务院国资委新媒体平台发布近期央企国企高管招聘信息汇总",source:"国资小新",time:"8月6日",url:"https://www.sasac.gov.cn/",tags:["hot"]},
+  ]},
   { id:"zhengtou",  label:"政投先机",   icon:"&#x1F3D7;", color:"#1565c0", items:[
     {id:1040,title:"国家发改委批复粤港澳大湾区城际铁路建设规划调整方案",summary:"新增广深第二高铁等 5 条线路，总投资约 4200 亿元",source:"国家发改委",time:"8月6日",url:"https://www.ndrc.gov.cn/",tags:["hot"]},
     {id:1041,title:"工信部公示 2026 年先进制造业集群竞赛胜出名单",summary:"15 个集群入选，涵盖新一代信息技术、高端装备、新材料等领域",source:"工信部",time:"8月5日",url:"https://www.miit.gov.cn/",tags:["new"]},
@@ -433,7 +445,7 @@ const SECTIONS = [
 let boardData = [];
 let currentModalCard = null;
 const STORAGE_KEY = 'zhengwu_kanban_v2';
-const MAX_DAYS = 2; // 最多显示2天内的新闻
+const MAX_ITEMS = 10; // 每个板块最多显示10条
 
 function parseTimeToDate(timeStr){
   if(!timeStr) return null;
@@ -453,13 +465,15 @@ function parseTimeToDate(timeStr){
 
 function getToday(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
 
-function isWithinDays(timeStr, days){
-  const d = parseTimeToDate(timeStr);
-  if(!d) return true; // keep items without parsable dates
-  const today = getToday();
-  const cutoff = new Date(today);
-  cutoff.setDate(cutoff.getDate() - days);
-  return d >= cutoff;
+function sortByDateNewest(items){
+  return items.slice().sort((a,b) => {
+    const da = parseTimeToDate(a.time);
+    const db = parseTimeToDate(b.time);
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return db.getTime() - da.getTime(); // newest first
+  });
 }
 
 function countTodayItems(items){
@@ -503,9 +517,7 @@ function initBoard(){
   boardData = SECTIONS.map(s => ({
     ...s,
     collapsed: false,
-    items: s.items
-      .map(it => ({...it}))
-      .filter(it => isWithinDays(it.time, MAX_DAYS))
+    items: sortByDateNewest(s.items.map(it => ({...it}))).slice(0, MAX_ITEMS)
   }));
   loadState();
 }
