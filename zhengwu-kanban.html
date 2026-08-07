@@ -585,13 +585,23 @@ function renderCard(it, colId){
       ${it.summary?`<div class="card-summary">${escHtml(it.summary)}</div>`:''}
       <div class="card-meta">
         <span class="card-source">${escHtml(it.source)}</span>
-        <span class="card-time">${it.time||''}</span>
+        <span class="card-time">${formatDisplayTime(it.time)}</span>
         <a class="card-link" href="${escHtml(it.url||'#')}" target="_blank" rel="noopener" title="查看原文" onclick="event.stopPropagation()">
           <svg viewBox="0 0 12 12" fill="none"><path d="M4 1.5H10.5V8M10.5 1.5L4 8M10.5 1.5H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
     </div>
   `;
+}
+
+function formatDisplayTime(timeStr){
+  if(!timeStr) return '';
+  // Already "8月6日" format
+  if(/^\d{1,2}月\d{1,2}日/.test(timeStr)) return timeStr;
+  // Convert ISO "2026-08-06T10:00:00" to "8月6日"
+  const m = timeStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return parseInt(m[2])+'月'+parseInt(m[3])+'日';
+  return timeStr;
 }
 
 function escHtml(str){
@@ -789,7 +799,7 @@ function openModal(cardEl){
   document.getElementById('modalTitle').textContent = cardData.title;
   document.getElementById('modalSummary').textContent = cardData.summary||'暂无摘要';
   document.getElementById('modalSource').textContent = '来源: '+(cardData.source||'');
-  document.getElementById('modalTime').textContent = cardData.time||'';
+  document.getElementById('modalTime').textContent = formatDisplayTime(cardData.time);
   const link = document.getElementById('modalLink');
   link.href = cardData.url||'#';
   link.style.display = cardData.url ? '' : 'none';
