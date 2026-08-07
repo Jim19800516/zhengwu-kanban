@@ -63,17 +63,16 @@ body{
 .topbar{
   position:sticky;top:0;z-index:100;
   background:rgba(44,44,44,.97);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid rgba(255,255,255,.08);padding:8px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);padding:6px 16px 4px 16px;
 }
 .dark .topbar{background:rgba(22,22,22,.97);border-bottom-color:rgba(255,255,255,.06)}
 .light .topbar{background:rgba(44,44,44,.97)}
 body:not(.dark):not(.light) .topbar{background:rgba(44,44,44,.97)}
-.topbar-inner{max-width:1600px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.topbar-brand{font-size:20px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:.02em}
-.topbar-brand-group{display:flex;flex-direction:column;align-items:flex-start;gap:0px;line-height:1.2}
-.topbar-brand-group .topbar-sub{margin:0;line-height:1.2}
-.topbar-sub{font-size:13px;color:rgba(255,255,255,.55);white-space:nowrap;font-weight:400;max-width:300px;overflow:hidden;text-overflow:ellipsis}
-.topbar-date{font-size:14px;font-weight:500;color:rgba(255,255,255,.7);white-space:nowrap;margin-left:4px}
+.topbar-inner{max-width:1600px;margin:0 auto;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.topbar-brand{font-size:20px;font-weight:700;color:#fff;white-space:nowrap;letter-spacing:.02em;line-height:1.2}
+.topbar-brand-group{display:inline-flex;align-items:flex-end;gap:8px;flex-wrap:wrap;line-height:1.2}
+.topbar-sub{font-size:13px;color:rgba(255,255,255,.55);white-space:nowrap;font-weight:400;max-width:300px;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.topbar-date{font-size:14px;font-weight:500;color:rgba(255,255,255,.7);white-space:nowrap;margin-left:4px;line-height:1.2}
 .topbar-spacer{flex:1}
 .topbar-search{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;min-width:180px;transition:all .2s ease}
 .topbar-search:focus-within{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.4);box-shadow:0 0 0 3px rgba(255,255,255,.1)}
