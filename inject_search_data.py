@@ -8,10 +8,10 @@ sections = [
         'id': 'dahu',
         'title': '打虎台',
         'dahuStats': {
-            'total2026': 8,
-            'shengbu': 1,
-            'tingju': 2,
-            'xianchu': 5,
+            'total2026': 5834,
+            'shengbu': 23,
+            'tingju': 186,
+            'xianchu': 1283,
             'updateDate': '2026年8月7日'
         },
         'items': [
