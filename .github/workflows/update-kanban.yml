@@ -1,0 +1,41 @@
+name: Update Zhengwu Kanban
+
+on:
+  schedule:
+    # 8:30 Beijing (CST=UTC+8) -> 00:30 UTC, set 5min early for GitHub delay
+    - cron: '25 0 * * *'
+    # 17:00 Beijing -> 09:00 UTC
+    - cron: '55 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate kanban
+        run: python generate_zhengwu_kanban.py
+
+      - name: Copy to index.html
+        run: cp zhengwu-kanban-live.html index.html
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html zhengwu-kanban-live.html
+          git diff --staged --quiet || git commit -m "Auto-update: $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git push
