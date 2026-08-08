@@ -998,14 +998,14 @@ def fetch_all_articles() -> list:
         else:
             log.warning(f"  ✗ {source_name}: 0 条")
 
-    # 3. 全局日期过滤：去除无日期或超过48小时的新闻
+    # 3. 全局日期过滤：去除无日期或超过7天的新闻（府衙招聘等低频板块需要更宽窗口）
     before = len(all_articles)
-    all_articles = [a for a in all_articles if a.get("time") and _is_recent(a["time"], max_age_hours=48)]
+    all_articles = [a for a in all_articles if a.get("time") and _is_recent(a["time"], max_age_hours=168)]
     dropped = before - len(all_articles)
     if dropped:
         log.info(f"全局日期过滤: 丢弃 {dropped} 条过期/无日期新闻, 保留 {len(all_articles)} 条")
 
-    log.info(f"RSS: {rss_success}/{rss_success+rss_fail} | 网页: {web_success}/{len(WEB_SCRAPE_SOURCES)} | 总计: {len(all_articles)} 条（48小时内）")
+    log.info(f"RSS: {rss_success}/{rss_success+rss_fail} | 网页: {web_success}/{len(WEB_SCRAPE_SOURCES)} | 总计: {len(all_articles)} 条（7天内）")
     return all_articles
 
 
@@ -1045,9 +1045,19 @@ def classify_and_group(articles: list) -> dict:
 
 
 def build_sections(categorized: dict) -> list:
-    """构建最终板块数据"""
+    """构建最终板块数据，按板块差异化时间窗口筛选"""
     sections = []
     placeholder_id = 1000
+
+    # 各板块的时间窗口（小时）：高频板块短窗口，低频板块宽窗口
+    SECTION_TIME_WINDOWS = {
+        "dahu": 96,      # 打虎台：4天
+        "gaoshan": 96,   # 高山流水：4天
+        "fuya": 336,     # 府衙招聘：14天（招聘公告活跃期长）
+        "zhengtou": 96,  # 政投先机：4天
+        "tufa": 72,      # 突发事件：3天（时效性最强）
+        "guoqi": 96,     # 国企新闻：4天
+    }
 
     for cat_id in ["dahu", "gaoshan", "fuya", "zhengtou", "tufa", "guoqi"]:
         rules = CATEGORY_RULES[cat_id]
@@ -1056,23 +1066,34 @@ def build_sections(categorized: dict) -> list:
         # 二级去重（安全网，确保同一板块内无重复）
         arts = deduplicate(arts)
 
-        # ★ 统一排序：广东省头部城市新闻优先
-        # 每个板块的排序逻辑：地理加分（主键） > 板块特有优先级（次键）
-        if cat_id == "tufa":
-            arts.sort(key=lambda a: (
-                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","") + " " + a.get("source","")),
-                -calculate_tufa_priority(a.get("title",""), a.get("source",""))
-            ))
-        elif cat_id == "zhengtou":
-            arts.sort(key=lambda a: (
-                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","")),
-                -calculate_zhengtou_priority(a)
-            ))
-        else:
-            # 打虎台/高山流水/府衙招聘/国企新闻：地理加分优先
-            arts.sort(key=lambda a: (
-                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","") + " " + a.get("source","")),
-            ))
+        # ★ 差异化时间窗口过滤
+        max_hours = SECTION_TIME_WINDOWS.get(cat_id, 96)
+        before_count = len(arts)
+        arts = [a for a in arts if a.get("time") and _is_recent(a["time"], max_age_hours=max_hours)]
+        dropped_time = before_count - len(arts)
+        if dropped_time > 0:
+            log.info(f"  {rules['label']}: 时间窗口({max_hours}h)过滤丢弃 {dropped_time} 条, 保留 {len(arts)} 条")
+
+        # ★ 统一排序：日期从新到旧（主键） > 地理加分（次键） > 板块特有优先级
+        def _sort_key(a):
+            dt = a.get("time")
+            # date_part: datetime.timestamp() for newest-first sorting (higher = newer)
+            date_part = dt.timestamp() if dt else 0
+            geo_bonus = calculate_gd_region_bonus(
+                a.get("title","") + " " + a.get("summary","") + " " + a.get("source",""))
+            special = 0
+            if cat_id == "tufa":
+                special = calculate_tufa_priority(a.get("title",""), a.get("source",""))
+            elif cat_id == "zhengtou":
+                special = calculate_zhengtou_priority(a)
+            # 排序权重: 日期70% + 地理20% + 特殊10%
+            return (-date_part * 0.7 - geo_bonus * 0.2 - special * 0.1)
+
+        arts.sort(key=_sort_key)
+
+        # 如果不足10条且板块为低频板块(fuya)，记录警告
+        if len(arts) < 5 and cat_id == "fuya":
+            log.warning(f"  {rules['label']}: 仅 {len(arts)} 条（14天窗口），可能需要搜索补丁数据")
 
         # 限制数量
         arts = arts[:MAX_PER_SECTION]
@@ -1098,6 +1119,7 @@ def build_sections(categorized: dict) -> list:
                 "time": art.get("time_str", ""),
                 "url": art.get("url", ""),
                 "tags": tags,
+                "_ts": art.get("time").timestamp() if art.get("time") else 0,  # 排序用时间戳
             }
             items.append(item)
 
@@ -1233,9 +1255,10 @@ def main():
         except Exception as e:
             log.warning(f"搜索数据加载失败: {e}")
 
-    # ★ 合并后统一地理排序：对所有板块的items按广东省头部城市优先级二次排序
+    # ★ 合并后统一排序：日期从新到旧（主键） > 地理加分（次键）
     for s in sections:
         s["items"].sort(key=lambda item: (
+            -(item.get("_ts", 0)),
             -calculate_gd_region_bonus(item.get("title", "") + " " + item.get("summary", "") + " " + item.get("source", "")),
         ))
 

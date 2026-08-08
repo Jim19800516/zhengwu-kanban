@@ -389,5 +389,94 @@ sections = [
                 "score": 88
             }
         ]
+    },
+    {
+        "id": "fuya",
+        "title": "📋 府衙招聘",
+        "label": "府衙招聘",
+        "icon": "📋",
+        "color": "#6a1b9a",
+        "items": [
+            {
+                "id": "search_fuya_1",
+                "title": "深圳市龙岗区国资局公开招聘区直管企业财务总监",
+                "summary": "面向社会公开招聘区直管企业财务总监，报名时间8月3日至8月18日，年薪制。",
+                "source": "深圳市龙岗区国资局",
+                "url": "https://www.lg.gov.cn/bmzz/czj/xxgk/qt/tzgg/content/post_12918093.html",
+                "time": "2026-08-03T09:00:00",
+                "category": "府衙招聘",
+                "score": 95
+            },
+            {
+                "id": "search_fuya_2",
+                "title": "珠海市供销投资控股集团副总经理市场化公开招聘公告",
+                "summary": "珠海市供销投资控股集团面向社会公开招聘副总经理，报名截止8月13日。",
+                "source": "珠海市人民政府",
+                "url": "https://www.zhuhai.gov.cn/xw/gsgg/content/post_3924234.html",
+                "time": "2026-07-13T09:00:00",
+                "category": "府衙招聘",
+                "score": 92
+            },
+            {
+                "id": "search_fuya_3",
+                "title": "广东南粤集团公开选聘人才市场公司总经理等高管岗位",
+                "summary": "广东省属一级企业南粤集团公开招聘人才市场公司总经理、食品水产公司总经理等。",
+                "source": "广东发布",
+                "url": "https://www.toutiao.com/article/7669051031707320878",
+                "time": "2026-08-01T21:14:00",
+                "category": "府衙招聘",
+                "score": 90
+            },
+            {
+                "id": "search_fuya_4",
+                "title": "中山兴中集团有限公司面向社会公开招聘13名工作人员",
+                "summary": "中山兴中集团（国企）公开招聘8个岗位13人，涵盖综合能源、现代农业等方向。",
+                "source": "中山兴中集团",
+                "url": "https://www.gaoxiaojob.com/announcement/detail/416337.html",
+                "time": "2026-07-16T00:00:00",
+                "category": "府衙招聘",
+                "score": 88
+            },
+            {
+                "id": "search_fuya_5",
+                "title": "中山公用事业集团市场化选聘董事会办公室主任",
+                "summary": "中山公用（上市公司/国企）通过市场化选聘方式产生董事会办公室主任1名。",
+                "source": "中山公用事业集团",
+                "url": "https://m.fenbi.com/page/fenxiaozhaokaodetail/2/0/467894740210688",
+                "time": "2026-07-24T09:00:00",
+                "category": "府衙招聘",
+                "score": 87
+            },
+            {
+                "id": "search_fuya_6",
+                "title": "中山市港口城市建设有限公司公开招聘4名员工",
+                "summary": "中山市港口城市建设有限公司（国企）面向社会公开招聘员工4名，报名截止8月6日。",
+                "source": "中山市港口镇政府",
+                "url": "https://www.zs.gov.cn/gkz/rsxx/content/post_2639041.html",
+                "time": "2026-07-31T09:00:00",
+                "category": "府衙招聘",
+                "score": 85
+            },
+            {
+                "id": "search_fuya_7",
+                "title": "广东南粤资本投资有限公司2026校园招聘信息技术岗",
+                "summary": "南粤集团二级企业面向应届毕业生招聘信息技术岗2名，工作地点澳门。",
+                "source": "广东发布",
+                "url": "https://www.toutiao.com/article/7671277515003986475",
+                "time": "2026-08-07T21:14:00",
+                "category": "府衙招聘",
+                "score": 83
+            },
+            {
+                "id": "search_fuya_8",
+                "title": "深圳市属国企2026校园招聘近200家国企近3000岗位",
+                "summary": "第九届菁英聚鹏城校招全面启动，涵盖投资运营、开发建设、科技创新等领域。",
+                "source": "深圳市国资委",
+                "url": "https://gzw.sz.gov.cn/gzrc/xyzp/content/post_12374569.html",
+                "time": "2026-08-05T17:49:00",
+                "category": "府衙招聘",
+                "score": 82
+            }
+        ]
     }
 ]
