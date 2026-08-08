@@ -7,4 +7,6 @@ deploy/
 *.txt
 *.json
 !package-hosting.json
+!requirements.txt
+!.github/
 .DS_Store
