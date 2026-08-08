@@ -75,6 +75,33 @@ STALE_FILTERS = [
     "二十条", "优化防控", "联防联控",
 ]
 
+# ==================== 广东省头部城市地理优先级 ====================
+# 标题/摘要命中这些城市关键词时，为该文章在所有板块中加分
+# 分值越高，该新闻在板块内的排序越靠前
+GD_REGION_KEYWORDS = [
+    ("广东省", 22), ("广东", 20),
+    ("深圳市", 18), ("深圳", 18),
+    ("珠海市", 16), ("珠海", 16),
+    ("中山市", 14), ("中山", 14),
+    ("广州市", 15), ("广州", 15),
+    ("粤港澳", 15), ("大湾区", 15),
+    ("珠江", 10), ("珠三角", 10),
+    ("佛山市", 8), ("佛山", 8),
+    ("东莞市", 8), ("东莞", 8),
+    ("惠州市", 6), ("惠州", 6),
+]
+
+def calculate_gd_region_bonus(text: str) -> int:
+    """计算广东省头部城市地理加分（0~22分）。
+    取命中的最高分关键词（不累加，避免一篇文章因提到多个广东城市而过度倾斜）。
+    """
+    max_bonus = 0
+    for kw, pts in GD_REGION_KEYWORDS:
+        if kw in text:
+            if pts > max_bonus:
+                max_bonus = pts
+    return max_bonus
+
 
 # ==================== RSS 数据源 ====================
 
@@ -743,6 +770,9 @@ def classify_article_with_scores(article: dict) -> list:
     summary = article.get("summary", "")
     text = f"{title} {summary}"
 
+    # 广东省头部城市地理加分（所有板块通用）
+    gd_bonus = calculate_gd_region_bonus(text)
+
     scores = defaultdict(int)
     for cat_id, rules in CATEGORY_RULES.items():
         # 排除检查
@@ -770,11 +800,12 @@ def classify_article_with_scores(article: dict) -> list:
                     if kw in text:
                         scores[cat_id] += 1
 
-    # 按分数排序
+    # 按分数排序（含地理加成）
     results = []
     for cat_id, score in scores.items():
         if score > 0:
-            results.append((cat_id, score + CATEGORY_RULES[cat_id]["priority"]))
+            # 基础分 = 关键词命中数 + 板块优先级 + 广东省地理加分
+            results.append((cat_id, score + CATEGORY_RULES[cat_id]["priority"] + gd_bonus))
 
     return results
 
@@ -862,12 +893,16 @@ def calculate_zhengtou_priority(article: dict) -> int:
         elif hours_ago <= 48:
             score += 5
 
+    # 4. 广东省头部城市地理加分 (0-22)
+    score += calculate_gd_region_bonus(text)
+
     return score
 
 
 def calculate_tufa_priority(title: str, source: str) -> int:
     """计算突发事件的优先级分数
     全国层面 > 地区/流域层面 > 省级层面 > 市级层面
+    同时广东省头部城市获得额外加分
     """
     score = 0
     text = title + " " + source
@@ -915,7 +950,10 @@ def calculate_tufa_priority(title: str, source: str) -> int:
     if any(kw in text for kw in ["遇难", "死亡", "伤亡", "失踪"]):
         urgency_bonus += 5
 
-    return score + urgency_bonus
+    # 广东省头部城市地理加分 (0-22)
+    gd_bonus = calculate_gd_region_bonus(text)
+
+    return score + urgency_bonus + gd_bonus
 
 
 def generate_id(text: str) -> int:
@@ -1018,13 +1056,23 @@ def build_sections(categorized: dict) -> list:
         # 二级去重（安全网，确保同一板块内无重复）
         arts = deduplicate(arts)
 
-        # 突发事件按优先级排序：全国 > 地区 > 省级 > 市级
+        # ★ 统一排序：广东省头部城市新闻优先
+        # 每个板块的排序逻辑：地理加分（主键） > 板块特有优先级（次键）
         if cat_id == "tufa":
-            arts.sort(key=lambda a: -calculate_tufa_priority(a.get("title",""), a.get("source","")))
-
-        # 政投先机按优先级排序：热度 > 资金量 > 时效
-        if cat_id == "zhengtou":
-            arts.sort(key=lambda a: -calculate_zhengtou_priority(a))
+            arts.sort(key=lambda a: (
+                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","") + " " + a.get("source","")),
+                -calculate_tufa_priority(a.get("title",""), a.get("source",""))
+            ))
+        elif cat_id == "zhengtou":
+            arts.sort(key=lambda a: (
+                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","")),
+                -calculate_zhengtou_priority(a)
+            ))
+        else:
+            # 打虎台/高山流水/府衙招聘/国企新闻：地理加分优先
+            arts.sort(key=lambda a: (
+                -calculate_gd_region_bonus(a.get("title","") + " " + a.get("summary","") + " " + a.get("source","")),
+            ))
 
         # 限制数量
         arts = arts[:MAX_PER_SECTION]
@@ -1184,6 +1232,12 @@ def main():
             log.info(f"搜索数据补充后: {sum(len(s['items']) for s in sections)} 条")
         except Exception as e:
             log.warning(f"搜索数据加载失败: {e}")
+
+    # ★ 合并后统一地理排序：对所有板块的items按广东省头部城市优先级二次排序
+    for s in sections:
+        s["items"].sort(key=lambda item: (
+            -calculate_gd_region_bonus(item.get("title", "") + " " + item.get("summary", "") + " " + item.get("source", "")),
+        ))
 
     # 4. 统计
     total = sum(len(s["items"]) for s in sections)
