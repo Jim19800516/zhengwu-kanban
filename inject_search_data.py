@@ -10,7 +10,6 @@ sections = [
         "label": "反腐",
         "icon": "dahu",
         "color": "#e74c3c",
-        "dahuStats": {"落马": 3, "双开": 6, "审查": 2},
         "items": [
             {
                 "id": "search_dahu_1",
