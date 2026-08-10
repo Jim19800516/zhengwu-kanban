@@ -47,7 +47,15 @@ FETCH_HEADERS = {
     "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Referer": "https://www.baidu.com/",
+    "Cache-Control": "max-age=0",
 }
+
+RETRY_COUNT = 2
+RETRY_DELAY = 1
 
 TIMEOUT = 12
 MAX_PER_SECTION = 10
@@ -82,6 +90,7 @@ GD_REGION_KEYWORDS = [
 # ===== 数据源 =====
 
 RSS_SOURCES = {
+    # 官方权威源
     "xinhua_politics": {
         "url": "http://www.xinhuanet.com/politics/news_politics.xml",
         "name": "新华网·时政",
@@ -109,6 +118,31 @@ RSS_SOURCES = {
     "people_all": {
         "url": "http://www.people.com.cn/rss/ywkx.xml",
         "name": "人民网·要闻快讯",
+    },
+    # 门户 RSS 源（补充官方源不足）
+    "sina_rss": {
+        "url": "https://rss.sina.com.cn/news/china/focus15.xml",
+        "name": "新浪新闻·国内",
+    },
+    "netease_rss": {
+        "url": "http://news.163.com/special/00011K6L/rss_newstop.xml",
+        "name": "网易新闻·头条",
+    },
+    "sohu_rss": {
+        "url": "http://news.sohu.com/rss/guonei.xml",
+        "name": "搜狐新闻·国内",
+    },
+    "ifeng_rss": {
+        "url": "http://news.ifeng.com/rss/index.xml",
+        "name": "凤凰新闻",
+    },
+    "chinanews_rss": {
+        "url": "https://www.chinanews.com.cn/rss/scroll.xml",
+        "name": "中国新闻网",
+    },
+    "ce_rss": {
+        "url": "http://www.ce.cn/rss/",
+        "name": "中国经济网",
     },
 }
 
@@ -188,6 +222,47 @@ WEB_SCRAPE_SOURCES = {
     "sz_gov": {
         "url": "https://www.sz.gov.cn/zwdt/",
         "name": "深圳市人民政府·政务动态",
+    },
+    # 门户新闻网页（补充官方源不足）
+    "sina_news": {
+        "url": "https://news.sina.com.cn/china/",
+        "name": "新浪新闻·国内",
+    },
+    "sina_gov": {
+        "url": "https://news.sina.com.cn/gov/",
+        "name": "新浪新闻·政务",
+    },
+    "netease_news": {
+        "url": "https://news.163.com/domestic/",
+        "name": "网易新闻·国内",
+    },
+    "sohu_news": {
+        "url": "https://news.sohu.com/guonei/",
+        "name": "搜狐新闻·国内",
+    },
+    "ifeng_news": {
+        "url": "https://news.ifeng.com/c/",
+        "name": "凤凰新闻",
+    },
+    "thepaper": {
+        "url": "https://www.thepaper.cn/",
+        "name": "澎湃新闻",
+    },
+    "chinanews": {
+        "url": "https://www.chinanews.com.cn/gn/",
+        "name": "中国新闻网",
+    },
+    "ce_cn": {
+        "url": "http://www.ce.cn/xwzx/gnsz/gdxw/",
+        "name": "中国经济网",
+    },
+    "huanqiu": {
+        "url": "https://www.huanqiu.com/china/",
+        "name": "环球网·国内",
+    },
+    "guancha": {
+        "url": "https://www.guancha.cn/mainnews.shtml",
+        "name": "观察者网",
     },
 }
 
@@ -399,41 +474,48 @@ def strip_tags(text):
     return re.sub(r'<[^>]+>', '', text).strip()
 
 
-def fetch_url(url, timeout=TIMEOUT):
-    """用 urllib 抓取 URL，自动处理编码、SSL 和 Cookie"""
-    try:
-        # 创建支持 Cookie 的 opener（解决政府网站重定向循环）
-        cookie_handler = urllib.request.HTTPCookieProcessor()
-        opener = urllib.request.build_opener(
-            cookie_handler,
-            urllib.request.HTTPSHandler(context=_SSL_CTX),
-        )
-        req = urllib.request.Request(url, headers=FETCH_HEADERS)
-        with opener.open(req, timeout=timeout) as resp:
-            raw = resp.read()
-            # 检测编码
-            content_type = resp.headers.get('Content-Type', '')
-            charset = None
-            if 'charset=' in content_type:
-                charset = content_type.split('charset=')[-1].strip().strip('"')
-            # 尝试从 HTML meta 标签检测编码
-            if not charset:
-                head = raw[:2048].decode('ascii', errors='ignore')
-                m = re.search(r'charset=["\']?([\w-]+)', head, re.IGNORECASE)
-                if m:
-                    charset = m.group(1)
-            if not charset:
-                charset = 'utf-8'
-            try:
-                return raw.decode(charset)
-            except (UnicodeDecodeError, LookupError):
+def fetch_url(url, timeout=TIMEOUT, retries=RETRY_COUNT):
+    """用 urllib 抓取 URL，自动处理编码、SSL、Cookie 和重试"""
+    last_error = None
+    for attempt in range(retries + 1):
+        try:
+            # 创建支持 Cookie 的 opener（解决政府网站重定向循环）
+            cookie_handler = urllib.request.HTTPCookieProcessor()
+            opener = urllib.request.build_opener(
+                cookie_handler,
+                urllib.request.HTTPSHandler(context=_SSL_CTX),
+            )
+            req = urllib.request.Request(url, headers=FETCH_HEADERS)
+            with opener.open(req, timeout=timeout) as resp:
+                raw = resp.read()
+                # 检测编码
+                content_type = resp.headers.get('Content-Type', '')
+                charset = None
+                if 'charset=' in content_type:
+                    charset = content_type.split('charset=')[-1].strip().strip('"')
+                # 尝试从 HTML meta 标签检测编码
+                if not charset:
+                    head = raw[:2048].decode('ascii', errors='ignore')
+                    m = re.search(r'charset=["\']?([\w-]+)', head, re.IGNORECASE)
+                    if m:
+                        charset = m.group(1)
+                if not charset:
+                    charset = 'utf-8'
                 try:
-                    return raw.decode('gb2312')
-                except:
-                    return raw.decode('utf-8', errors='replace')
-    except Exception as e:
-        print(f"  抓取失败: {url} -- {e}")
-        return None
+                    return raw.decode(charset)
+                except (UnicodeDecodeError, LookupError):
+                    try:
+                        return raw.decode('gb2312')
+                    except:
+                        return raw.decode('utf-8', errors='replace')
+        except Exception as e:
+            last_error = e
+            if attempt < retries:
+                print(f"  重试 {attempt+1}/{retries}: {url}")
+                time.sleep(RETRY_DELAY)
+            continue
+    print(f"  抓取失败: {url} -- {last_error}")
+    return None
 
 
 def parse_rss(url, source_name):
@@ -485,24 +567,38 @@ def parse_rss(url, source_name):
 
 
 def scrape_webpage(url, source_name):
-    """用正则解析网页，提取链接和标题"""
+    """用正则解析网页，提取新闻链接和标题"""
     html = fetch_url(url)
     if not html:
         return []
 
     articles = []
     seen_urls = set()
+    now = datetime.datetime.now()
 
-    # 提取所有 <a> 标签及其上下文（前后200字符）
+    # 提取所有 <a> 标签
     pattern = r'<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>'
     for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
         href = m.group(1)
         inner = m.group(2)
         title = strip_tags(inner).strip()
 
+        # 如果 inner 为空，尝试从 title 属性获取
+        if not title and 'title=' in m.group(0):
+            tm = re.search(r'title=["\']([^"\']+)["\']', m.group(0))
+            if tm:
+                title = tm.group(1).strip()
+
         if not title or len(title) < 8:
             continue
+
+        # 过滤非新闻链接
         if not href or href.startswith("javascript:") or href == "#" or href.startswith("mailto:"):
+            continue
+        if any(kw in href for kw in [".jpg", ".png", ".gif", ".mp4", ".pdf", "/login", "/register"]):
+            continue
+        # 过滤导航、广告、专题等
+        if any(kw in title for kw in ["更多", "下一页", "上一页", "登录", "注册", "专题", "组图", "视频"]):
             continue
 
         # 补全 URL
@@ -525,36 +621,32 @@ def scrape_webpage(url, source_name):
         # 从 URL 提取日期
         dt = _parse_datetime(url=href)
 
-        # 如果 URL 中没有日期，尝试从周围 HTML 内容提取
-        if not dt:
-            # 获取 <a> 标签前后200字符的上下文
-            start = max(0, m.start() - 200)
-            end = min(len(html), m.end() + 200)
-            context = html[start:end]
-            # 查找日期文本：YYYY-MM-DD 或 YYYY年MM月DD日 或 [YYYY-MM-DD]
-            date_patterns = [
-                r'\[(\d{4})-(\d{2})-(\d{2})\]',
-                r'(\d{4})-(\d{2})-(\d{2})',
-                r'(\d{4})年(\d{1,2})月(\d{1,2})日',
-            ]
-            for dp in date_patterns:
-                dm = re.search(dp, context)
-                if dm:
-                    try:
-                        dt = datetime.datetime(
-                            int(dm.group(1)), int(dm.group(2)), int(dm.group(3)))
-                        break
-                    except ValueError:
-                        pass
+        # 从周围 HTML 内容提取日期和摘要
+        start = max(0, m.start() - 300)
+        end = min(len(html), m.end() + 300)
+        context = html[start:end]
 
-        # 如果仍然没有日期，假设为今天（避免大量新闻被过滤）
         if not dt:
-            dt = datetime.datetime.now()
+            dt = _parse_datetime_from_context(context)
+
+        # 提取摘要（从上下文中的 p 标签或纯文本）
+        summary = ""
+        if not summary:
+            # 尝试从上下文提取一段文字
+            text_ctx = strip_tags(context).replace(title, "").strip()
+            # 清理多余空白
+            text_ctx = re.sub(r'\s+', ' ', text_ctx)
+            if len(text_ctx) > 20:
+                summary = text_ctx[:200]
+
+        # 如果仍然没有日期，假设为今天
+        if not dt:
+            dt = now
 
         articles.append({
             "title": title[:100],
             "url": href,
-            "summary": "",
+            "summary": summary,
             "time": dt,
             "time_str": _format_time(dt) if dt else "",
             "source": source_name,
@@ -566,15 +658,47 @@ def scrape_webpage(url, source_name):
     return articles
 
 
+def _parse_datetime_from_context(context):
+    """从 HTML 上下文中提取日期"""
+    date_patterns = [
+        r'(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})',
+        r'(\d{4})-(\d{2})-(\d{2})',
+        r'(\d{4})年(\d{1,2})月(\d{1,2})日\s*(\d{2}):(\d{2})',
+        r'(\d{4})年(\d{1,2})月(\d{1,2})日',
+        r'\[(\d{4})-(\d{2})-(\d{2})\]',
+    ]
+    for dp in date_patterns:
+        dm = re.search(dp, context)
+        if dm:
+            try:
+                groups = dm.groups()
+                year = int(groups[0])
+                month = int(groups[1])
+                day = int(groups[2])
+                if 2020 <= year <= 2030 and 1 <= month <= 12 and 1 <= day <= 31:
+                    return datetime.datetime(year, month, day)
+            except (ValueError, IndexError):
+                pass
+    return None
+
+
 def _parse_datetime(time_str="", url=None):
     """解析文章时间，返回 datetime 对象"""
     # 1. 从 URL 路径提取日期
     if url:
-        m = re.search(r'/(\d{4})-(\d{2})/(\d{2})/', url)
+        # 标准格式：/2026-08-10/ 或 /2026/08/10/
+        m = re.search(r'/(\d{4})-(\d{2})/?(\d{2})/', url)
         if not m:
-            m = re.search(r'[/t](\d{4})(\d{2})(\d{2})[/_]', url)
+            m = re.search(r'/(\d{4})/(\d{2})/(\d{2})/', url)
+        # 网易格式：/26/0810/10/
         if not m:
-            m = re.search(r'(\d{4})(\d{2})(\d{2})', url)
+            m = re.search(r'/(\d{2})/(\d{2})(\d{2})/\d{2}/', url)
+            if m:
+                year = 2000 + int(m.group(1))
+                return datetime.datetime(year, int(m.group(2)), int(m.group(3)))
+        # 紧凑格式：/20260810/
+        if not m:
+            m = re.search(r'/(\d{4})(\d{2})(\d{2})/', url)
         if m:
             try:
                 return datetime.datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
