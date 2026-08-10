@@ -264,6 +264,23 @@ WEB_SCRAPE_SOURCES = {
         "url": "https://www.guancha.cn/mainnews.shtml",
         "name": "观察者网",
     },
+    # 府衙招聘数据源
+    "gov_zhaolu": {
+        "url": "https://www.gov.cn/zhengce/zhengceku/search.htm?q=招聘公告",
+        "name": "中国政府网·招聘公告",
+    },
+    "sasac_zhaopin": {
+        "url": "https://www.sasac.gov.cn/n2588035/n2588320/index.html",
+        "name": "国资委·央企招聘",
+    },
+    "gd_gzw_zhaopin": {
+        "url": "http://gzw.gd.gov.cn/zwgk/rsxx/",
+        "name": "广东省国资委·人事信息",
+    },
+    "sz_gzw_zhaopin": {
+        "url": "https://gzw.sz.gov.cn/gkmlpt/",
+        "name": "深圳市国资委·招聘信息",
+    },
 }
 
 
