@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>政务看板 SCF 云函数部署指南</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f5f7;color:#1d1d1f;line-height:1.7;padding:20px}
+.container{max-width:840px;margin:0 auto}
+h1{font-size:28px;margin:20px 0 10px;letter-spacing:-.02em}
+h2{font-size:20px;margin:28px 0 12px;color:#b71c1c}
+h3{font-size:16px;margin:20px 0 8px}
+p{margin:8px 0}
+code{background:#e8e8ed;padding:2px 6px;border-radius:4px;font-size:13px;font-family:"SF Mono","Fira Code",monospace}
+pre{background:#1e1e1e;color:#e8e8e8;padding:16px 20px;border-radius:10px;overflow-x:auto;margin:12px 0;font-size:13px;line-height:1.6}
+pre code{background:none;padding:0;color:inherit}
+.note{background:#fff8e1;border-left:3px solid #ffc107;padding:12px 16px;border-radius:6px;margin:12px 0;font-size:14px}
+.tip{background:#e8f5e9;border-left:3px solid #4caf50;padding:12px 16px;border-radius:6px;margin:12px 0;font-size:14px}
+.warn{background:#ffebee;border-left:3px solid #f44336;padding:12px 16px;border-radius:6px;margin:12px 0;font-size:14px}
+.step{background:#fff;border-radius:12px;padding:20px 24px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04)}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#b71c1c;color:#fff;font-size:14px;font-weight:700;margin-right:8px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th,td{border:1px solid #ddd;padding:8px 12px;text-align:left}
+th{background:#f0ede8;font-weight:600}
+.intro{background:linear-gradient(135deg,#b71c1c,#d32f2f);color:#fff;padding:24px 28px;border-radius:12px;margin:16px 0}
+.intro h1{color:#fff;margin:0}
+.intro p{opacity:.9;margin:8px 0 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="intro">
+<h1>政务看板 SCF 云函数部署指南</h1>
+<p>将政务看板迁移到腾讯云 SCF，实现云端定时自动更新，无需本地客户端在线。</p>
+</div>
+
+<h2>架构对比</h2>
+<table>
+<tr><th>项目</th><th>旧方案（WorkBuddy自动化）</th><th>新方案（SCF云函数）</th></tr>
+<tr><td>调度方式</td><td>WorkBuddy 客户端定时触发</td><td>腾讯云 SCF 定时触发器</td></tr>
+<tr><td>运行位置</td><td>本地电脑</td><td>腾讯云服务器</td></tr>
+<tr><td>是否依赖客户端在线</td><td><strong>是</strong>（客户端不在线则无法触发）</td><td><strong>否</strong>（7×24自动运行）</td></tr>
+<tr><td>数据获取</td><td>WebSearch 搜索 + 网页抓取</td><td>纯网页抓取（urllib + 正则）</td></tr>
+<tr><td>更新方式</td><td>本地 git push</td><td>GitHub Contents API</td></tr>
+<tr><td>第三方依赖</td><td>requests, feedparser, beautifulsoup4</td><td><strong>零依赖</strong>（纯标准库）</td></tr>
+</table>
+
+<h2>前置条件</h2>
+<ul style="margin:8px 0 8px 20px">
+<li>腾讯云账号（已实名认证）</li>
+<li>GitHub Personal Access Token（已有，复用 daily-briefing 的 Token）</li>
+<li>政务看板 GitHub 仓库已包含 <code>zhengwu-kanban.html</code> 模板文件</li>
+</ul>
+
+<div class="step">
+<span class="step-num">1</span><strong>登录腾讯云 SCF 控制台</strong>
+<p>打开 <a href="https://console.cloud.tencent.com/scf" target="_blank">https://console.cloud.tencent.com/scf</a>，选择区域为<strong>北京</strong>或<strong>广州</strong>（离数据源更近）。</p>
+<p>点击左侧菜单「函数服务」→「新建」。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>创建云函数</strong>
+<table>
+<tr><th>配置项</th><th>填写内容</th></tr>
+<tr><td>函数名称</td><td><code>zhengwu_kanban</code></td></tr>
+<tr><td>运行环境</td><td>Python 3.6 或更高（推荐 Python 3.9）</td></tr>
+<tr><td>创建方式</td><td>空白函数</td></tr>
+<tr><td>执行方法</td><td><code>scf_zhengwu_kanban.main_handler</code></td></tr>
+<tr><td>内存配置</td><td>256MB（推荐 512MB）</td></tr>
+<tr><td>执行超时时间</td><td>180秒（建议 ≥ 120秒）</td></tr>
+</table>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>上传函数代码</strong>
+<p>将 <code>scf_zhengwu_kanban.py</code> 文件的完整内容粘贴到 SCF 在线代码编辑器中。</p>
+<p>文件名保持为 <code>scf_zhengwu_kanban.py</code>（与执行方法对应）。</p>
+<p>点击「保存」。</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>配置环境变量</strong>
+<p>在函数配置页 →「环境变量」中添加以下变量：</p>
+<table>
+<tr><th>Key</th><th>Value</th><th>说明</th></tr>
+<tr><td><code>GITHUB_TOKEN</code></td><td><code>ghp_xxxxxxxxxxxx</code></td><td>GitHub Personal Access Token（需要 repo 权限）</td></tr>
+<tr><td><code>GITHUB_OWNER</code></td><td><code>Jim19800516</code></td><td>GitHub 用户名</td></tr>
+<tr><td><code>GITHUB_REPO</code></td><td><code>zhengwu-kanban</code></td><td>仓库名称</td></tr>
+<tr><td><code>GITHUB_BRANCH</code></td><td><code>main</code></td><td>分支名称</td></tr>
+</table>
+<div class="note">
+<strong>Token 复用</strong>：如果 daily-briefing 云函数已在运行，可以直接复用同一个 GitHub Token，只要该 Token 有 <code>zhengwu-kanban</code> 仓库的写入权限。
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">5</span><strong>配置定时触发器</strong>
+<p>在函数配置页 →「触发管理」→「创建触发器」：</p>
+
+<h3>触发器1：早间更新（08:30）</h3>
+<table>
+<tr><th>配置项</th><th>填写内容</th></tr>
+<tr><td>触发方式</td><td>定时触发</td></tr>
+<tr><td>触发周期</td><td>自定义</td></tr>
+<tr><td>Cron 表达式</td><td><code>0 30 8 * * * *</code></td></tr>
+<tr><td>触发名称</td><td>morning_update</td></tr>
+</table>
+
+<h3>触发器2：下午更新（17:00）</h3>
+<table>
+<tr><th>配置项</th><th>填写内容</th></tr>
+<tr><td>触发方式</td><td>定时触发</td></tr>
+<tr><td>触发周期</td><td>自定义</td></tr>
+<tr><td>Cron 表达式</td><td><code>0 0 17 * * * *</code></td></tr>
+<tr><td>触发名称</td><td>afternoon_update</td></tr>
+</table>
+
+<div class="note">
+<strong>Cron 说明</strong>：SCF 的 Cron 格式为 <code>秒 分 时 日 月 星期 年</code>。<br>
+<code>0 30 8 * * * *</code> = 每天 08:30:00 触发<br>
+<code>0 0 17 * * * *</code> = 每天 17:00:00 触发
+</div>
+</div>
+
+<div class="step">
+<span class="step-num">6</span><strong>测试运行</strong>
+<p>在函数代码页点击右上角「测试运行」，使用默认测试事件。</p>
+<p>正常运行的输出示例：</p>
+<pre><code>{
+  "code": 0,
+  "message": "政务看板更新成功",
+  "total": 28,
+  "commit": "a1b2c3d4",
+  "sections": {
+    "dahu": 5,
+    "gaoshan": 6,
+    "fuya": 3,
+    "zhengtou": 7,
+    "tufa": 4,
+    "guoqi": 3
+  },
+  "updateTime": "2026-08-10 17:00:12"
+}</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">7</span><strong>验证 GitHub Pages</strong>
+<p>测试运行成功后，等待 1-2 分钟，访问：</p>
+<p>🔗 <a href="https://jim19800516.github.io/zhengwu-kanban/" target="_blank">https://jim19800516.github.io/zhengwu-kanban/</a></p>
+<p>确认页面已更新为最新日期和新闻数据。</p>
+</div>
+
+<h2>数据源说明</h2>
+<p>SCF 版本从以下政府网站直接抓取数据：</p>
+<table>
+<tr><th>板块</th><th>数据源</th></tr>
+<tr><td>🐯 打虎台</td><td>中央纪委国家监委 (ccdi.gov.cn)</td></tr>
+<tr><td>🏔 高山流水</td><td>新华网·人事、人民网·人事任免</td></tr>
+<tr><td>🏗 政投先机</td><td>发改委、中国政府网·联播</td></tr>
+<tr><td>⚠ 突发事件</td><td>应急管理部、中国地震局</td></tr>
+<tr><td>🏭 国企新闻</td><td>国资委·国资动态/央企动态、广东省/深圳市国资委</td></tr>
+<tr><td>📋 府衙招聘</td><td>广东省/深圳市国资委·通知公告</td></tr>
+<tr><td>综合</td><td>新华网·时政/法治、人民网·要闻快讯</td></tr>
+</table>
+
+<div class="tip">
+<strong>云端优势</strong>：腾讯云 SCF 从国内服务器访问政府网站，网络连通性和速度远优于本地环境通过代理访问。中纪委、应急管理部等在本地因 SSL/重定向问题无法访问的网站，在 SCF 环境中通常可以正常访问。
+</div>
+
+<h2>故障排查</h2>
+
+<h3>问题：函数执行超时</h3>
+<p>解决方案：将执行超时时间从 180 秒调整为 300 秒。部分政府网站响应较慢时可能需要更长时间。</p>
+
+<h3>问题：GitHub API 返回 401</h3>
+<p>检查 <code>GITHUB_TOKEN</code> 是否正确，Token 是否过期。GitHub Token 有效期通常为 90 天，过期后需重新生成。</p>
+
+<h3>问题：GitHub API 返回 404</h3>
+<p>检查 <code>GITHUB_OWNER</code>、<code>GITHUB_REPO</code>、<code>GITHUB_BRANCH</code> 是否正确。确认仓库中存在 <code>zhengwu-kanban.html</code> 模板文件。</p>
+
+<h3>问题：数据量不足（某些板块 0 条）</h3>
+<p>可能原因：</p>
+<ul style="margin:8px 0 8px 20px">
+<li>政府网站临时不可用或改版</li>
+<li>网络波动导致部分数据源抓取失败</li>
+<li>时间窗口内确实无相关新闻</li>
+</ul>
+<p>SCF 函数会在下一次定时触发时自动重试。如果持续为 0，检查 SCF 日志中各数据源的抓取状态。</p>
+
+<h3>查看执行日志</h3>
+<p>在 SCF 控制台 → 函数详情 →「日志查询」中查看每次执行的详细日志，包括各数据源抓取结果和分类统计。</p>
+
+<h2>与 daily-briefing 的对比</h2>
+<table>
+<tr><th>项目</th><th>daily-briefing</th><th>政务看板</th></tr>
+<tr><td>SCF 函数名</td><td>daily_briefing</td><td>zhengwu_kanban</td></tr>
+<tr><td>代码文件</td><td>scf_daily_briefing_github.py</td><td>scf_zhengwu_kanban.py</td></tr>
+<tr><td>GitHub 仓库</td><td>daily-briefing</td><td>zhengwu-kanban</td></tr>
+<tr><td>模板文件</td><td>无（HTML 内置在代码中）</td><td>zhengwu-kanban.html（从仓库获取）</td></tr>
+<tr><td>触发时间</td><td>每日 09:00</td><td>每日 08:30 + 17:00</td></tr>
+<tr><td>数据源</td><td>AI HOT API + 东方财富 + 央视网</td><td>政府网站网页抓取</td></tr>
+<tr><td>分类逻辑</td><td>关键词分类（8个板块）</td><td>关键词+条件关键词分类（6个板块）</td></tr>
+</table>
+
+<div class="tip">
+两个云函数可以共用同一个 GitHub Token，互不干扰。各自独立运行，各自更新各自的仓库。
+</div>
+
+<h2>后续优化建议</h2>
+<ul style="margin:8px 0 8px 20px">
+<li>如果抓取数据持续不足，可考虑在 SCF 中集成百度新闻搜索 API 作为补充数据源</li>
+<li>添加 SCF 内存缓存（10分钟），避免短时间内重复触发导致重复抓取</li>
+<li>添加邮件/微信通知，在函数执行失败时发送告警</li>
+<li>在原 WorkBuddy 自动化任务中添加检查逻辑：如果 SCF 已成功更新，则跳过本地执行</li>
+</ul>
+
+</div>
+</body>
+</html>
