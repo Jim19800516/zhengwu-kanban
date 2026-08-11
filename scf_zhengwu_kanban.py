@@ -28,6 +28,7 @@ import base64
 import hashlib
 import urllib.request
 import urllib.error
+import urllib.parse
 import datetime
 from collections import defaultdict
 from difflib import SequenceMatcher
@@ -124,9 +125,17 @@ RSS_SOURCES = {
         "url": "https://rss.sina.com.cn/news/china/focus15.xml",
         "name": "新浪新闻·国内",
     },
+    "sina_focus": {
+        "url": "https://rss.sina.com.cn/news/china/focus15.xml",
+        "name": "新浪新闻·焦点",
+    },
     "netease_rss": {
         "url": "http://news.163.com/special/00011K6L/rss_newstop.xml",
         "name": "网易新闻·头条",
+    },
+    "netease_guonei": {
+        "url": "http://news.163.com/special/00011K6L/rss_guonei.xml",
+        "name": "网易新闻·国内",
     },
     "sohu_rss": {
         "url": "http://news.sohu.com/rss/guonei.xml",
@@ -136,13 +145,53 @@ RSS_SOURCES = {
         "url": "http://news.ifeng.com/rss/index.xml",
         "name": "凤凰新闻",
     },
+    "ifeng_guonei": {
+        "url": "http://news.ifeng.com/rss/guonei.xml",
+        "name": "凤凰新闻·国内",
+    },
     "chinanews_rss": {
         "url": "https://www.chinanews.com.cn/rss/scroll.xml",
         "name": "中国新闻网",
     },
+    "chinanews_gn": {
+        "url": "https://www.chinanews.com.cn/rss/gn.xml",
+        "name": "中国新闻网·国内",
+    },
     "ce_rss": {
         "url": "http://www.ce.cn/rss/",
         "name": "中国经济网",
+    },
+    "ce_gdxw": {
+        "url": "http://www.ce.cn/rss/gdxw.xml",
+        "name": "中国经济网·滚动新闻",
+    },
+    "thepaper_rss": {
+        "url": "https://www.thepaper.cn/rssFeed_china.xml",
+        "name": "澎湃新闻·时政",
+    },
+    "huanqiu_rss": {
+        "url": "https://www.huanqiu.com/rss/",
+        "name": "环球网",
+    },
+    "guancha_rss": {
+        "url": "https://www.guancha.cn/rss.xml",
+        "name": "观察者网",
+    },
+    "cctv_news": {
+        "url": "https://news.cctv.com/china/rss.xml",
+        "name": "央视网·国内新闻",
+    },
+    "qq_news": {
+        "url": "https://news.qq.com/newsrss/qq_newschina.xml",
+        "name": "腾讯新闻·国内",
+    },
+    "yicai_rss": {
+        "url": "https://www.yicai.com/rss/",
+        "name": "第一财经",
+    },
+    "cs_rss": {
+        "url": "http://www.cs.com.cn/ssgs/rss.xml",
+        "name": "中国证券报",
     },
 }
 
@@ -301,6 +350,10 @@ CATEGORY_RULES = {
             "融资", "债券", "基金",
             "PPP", "特许经营", "REITs",
             "预算内投资", "中央投资",
+            "高铁", "铁路", "机场", "港口", "公路", "桥梁", "隧道",
+            "新能源", "半导体", "芯片", "集成电路", "人工智能",
+            "数据中心", "算力", "5G", "新基建",
+            "央企签约", "央企投资", "国资投资",
         ],
         "exclude": [
             "腐败", "贪腐", "落马", "双规", "双开", "被查", "受贿", "贪污",
@@ -350,6 +403,9 @@ CATEGORY_RULES = {
             "中国铁建", "中交集团", "中国电建",
             "航天科技", "航天科工", "中国兵器",
             "宝武", "鞍钢", "华润",
+            "集团", "企业集团", "国企集团",
+            "国资监管", "央企负责人", "国企负责人",
+            "央企利润", "国企利润", "国资改革",
         ],
         "exclude": ["腐败", "贪腐", "落马", "双规", "双开", "被查", "受贿", "贪污",
             "严重违纪", "审查调查", "开除党籍", "纪律审查"],
@@ -359,13 +415,17 @@ CATEGORY_RULES = {
         "keywords": [
             "人事任免", "干部任免", "人事调整", "人事变动",
             "中央批准", "中央决定",
-            "省委书记", "省长",
+            "省委书记", "省长", "副省长", "自治区主席",
             "上将军衔", "晋升上将军衔",
             "国务院任免", "全国人大任免",
             "央企主要负责人", "国企负责人",
             "领导职务任免",
             "同志任", "同志不再担任", "同志辞去",
             "国家工作人员任免",
+            "任前公示", "拟任", "拟提拔", "拟任命",
+            "提名", "当选", "补选", "接替",
+            "履新", "晋升", "授衔", "调任", "任职", "免去",
+            "换届", "出任", "兼任", "调离",
         ],
         "conditional_keywords": [
             "任命", "任免", "调任", "任职", "免去", "辞去",
@@ -409,6 +469,8 @@ CATEGORY_RULES = {
             "纪律审查", "审查调查",
             "被提起公诉",
             "巨额财产来源不明",
+            "涉嫌严重违纪违法", "接受纪律审查", "接受监察调查",
+            "被查", "被逮捕", "被公诉", "被判", "获刑", "移送司法",
         ],
         "conditional_keywords": [
             "被查", "被逮捕", "被公诉",
@@ -544,7 +606,11 @@ def parse_rss(url, source_name):
     articles = []
     # 提取所有 <item> 块
     items = re.findall(r'<item[^>]*>(.*?)</item>', xml, re.DOTALL | re.IGNORECASE)
-    for item in items[:50]:
+    if not items:
+        # 有些 RSS 用 <entry> 标签
+        items = re.findall(r'<entry[^>]*>(.*?)</entry>', xml, re.DOTALL | re.IGNORECASE)
+
+    for item in items[:60]:
         title_m = re.search(r'<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item, re.DOTALL)
         link_m = re.search(r'<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>', item, re.DOTALL)
         # link 可能是 <link/> 自闭合标签
@@ -554,6 +620,10 @@ def parse_rss(url, source_name):
         date_m = re.search(r'<pubDate[^>]*>(.*?)</pubDate>', item, re.DOTALL | re.IGNORECASE)
         if not date_m:
             date_m = re.search(r'<updated[^>]*>(.*?)</updated>', item, re.DOTALL | re.IGNORECASE)
+        if not date_m:
+            date_m = re.search(r'<published[^>]*>(.*?)</published>', item, re.DOTALL | re.IGNORECASE)
+        if not date_m:
+            date_m = re.search(r'<dc:date[^>]*>(.*?)</dc:date>', item, re.DOTALL | re.IGNORECASE)
 
         title = strip_tags(title_m.group(1).strip()) if title_m else ""
         link = ""
@@ -568,7 +638,12 @@ def parse_rss(url, source_name):
             continue
 
         dt = _parse_datetime(time_str=published, url=link)
-        if dt and not _is_recent(dt, max_age_hours=72):
+        # RSS 无日期时默认今天（很多门户 RSS 无日期但内容最新）
+        if not dt:
+            dt = datetime.datetime.now()
+
+        # 7天内都保留
+        if not _is_recent(dt, max_age_hours=168):
             continue
 
         articles.append({
@@ -673,6 +748,96 @@ def scrape_webpage(url, source_name):
             break
 
     return articles
+
+
+def scrape_news_search(query, source_name="新闻搜索"):
+    """
+    从百度新闻搜索抓取结果，作为数据源兜底。
+    百度新闻对云服务器相对友好，且能覆盖各类政务关键词。
+    """
+    try:
+        encoded = urllib.parse.quote(query)
+    except Exception:
+        encoded = urllib.parse.quote(query.encode('utf-8'))
+    search_url = f"https://news.baidu.com/ns?word={encoded}&tn=newstitle&from=news&cl=2&rn=50&ct=0"
+
+    html = fetch_url(search_url, timeout=15)
+    if not html:
+        return []
+
+    articles = []
+    seen_urls = set()
+    now = datetime.datetime.now()
+
+    # 百度新闻结果结构：
+    # <h3 class="c-title"><a href="...">标题</a></h3>
+    pattern = r'<h3[^>]*class=["\']c-title["\'][^>]*>\s*<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>'
+    for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
+        href = m.group(1)
+        title = strip_tags(m.group(2)).strip()
+
+        if not title or len(title) < 8:
+            continue
+        if href in seen_urls:
+            continue
+        seen_urls.add(href)
+
+        # 百度跳转链接需要解码
+        if href.startswith("http://news.baidu.com/ns?"):
+            real_m = re.search(r'url=([^&]+)', href)
+            if real_m:
+                try:
+                    href = urllib.parse.unquote(real_m.group(1))
+                except Exception:
+                    pass
+
+        # 过滤广告和无关内容
+        if is_stale_content(title):
+            continue
+        if any(kw in title for kw in ["百度", "推广", "广告", "登录", "注册"]):
+            continue
+
+        dt = _parse_datetime(url=href) or now
+
+        articles.append({
+            "title": title[:100],
+            "url": href,
+            "summary": "",
+            "time": dt,
+            "time_str": _format_time(dt),
+            "source": source_name,
+        })
+
+        if len(articles) >= 30:
+            break
+
+    return articles
+
+
+def fallback_category_search(categories=None):
+    """
+    当板块数据不足时，用百度新闻搜索兜底补充。
+    分别搜索每个板块的核心关键词，获取最新新闻。
+    """
+    if categories is None:
+        categories = {
+            "dahu": "中央纪委 落马 双开 审查调查 2026年",
+            "gaoshan": "干部任免 省委书记 履新 任前公示 2026年",
+            "zhengtou": "发改委 批复 重大项目 投资 签约 2026年",
+            "tufa": "应急管理部 台风 地震 洪水 事故 2026年",
+            "guoqi": "国资委 国企改革 央企 利润 2026年",
+            "fuya": "国企招聘 央企招聘 公开招聘 2026年",
+        }
+
+    all_articles = []
+    for cat_id, query in categories.items():
+        print(f"  兜底搜索 [{cat_id}]: {query}")
+        arts = scrape_news_search(query, source_name="新闻搜索·" + cat_id)
+        print(f"    -> {len(arts)} 条")
+        all_articles.extend(arts)
+        time.sleep(0.5)
+
+    return all_articles
 
 
 def _parse_datetime_from_context(context):
@@ -950,6 +1115,14 @@ def fetch_all_articles():
             web_success += 1
         else:
             print(f"  FAIL {source_info['name']}: 0 条")
+
+    print("第三阶段: 兜底搜索补充...")
+    fallback_articles = fallback_category_search()
+    if fallback_articles:
+        print(f"  OK 兜底搜索: {len(fallback_articles)} 条")
+        all_articles.extend(fallback_articles)
+    else:
+        print(f"  FAIL 兜底搜索: 0 条")
 
     # 全局日期过滤：7天
     before = len(all_articles)
