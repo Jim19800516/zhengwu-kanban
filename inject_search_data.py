@@ -7,7 +7,14 @@ sections = [
     {
         "id": "dahu",
         "title": "🐯 打虎台",
-        "dahuStats": {"落马": 7, "双开": 2, "审查": 5},
+        "dahuStats": {
+            "total2026": 5834,
+            "shengbu": 23,
+            "tingju": 186,
+            "xianchu": 1283,
+            "others": 4342,
+            "updateDate": "2026年8月11日"
+        },
         "items": [
             {
                 "id": "search_dahu_1",
@@ -276,6 +283,62 @@ sections = [
                 "time": "2026-08-10T16:00:00",
                 "category": "突发事件",
                 "score": 80
+            }
+        ]
+    },
+    {
+        "id": "fuya",
+        "title": "📋 府衙招聘",
+        "items": [
+            {
+                "id": "search_fuya_1",
+                "title": "中铝(雄安)矿业有限责任公司面向中铝集团内部招聘部分岗位",
+                "summary": "面向中铝集团内部以竞争上岗方式产生中铝雄矿部门负责人人选，涉及综合管理部副总经理、非洲办事处负责人等岗位，报名截止8月13日。",
+                "source": "中国铝业集团",
+                "url": "https://www.chinalco.com.cn/rlzy/rlzy_zpxx/202608/t20260806_175052.html",
+                "time": "2026-08-06T10:00:00",
+                "category": "府衙招聘",
+                "score": 88
+            },
+            {
+                "id": "search_fuya_2",
+                "title": "海南陵水黎安国际教育创新试验区科教发展集团有限公司总经理选聘",
+                "summary": "面向社会市场化选聘集团总经理1名，要求10年以上大中型企业经营管理经验，报名截止8月10日17:00。",
+                "source": "国聘网",
+                "url": "https://iguopin.com/job/detail?id=211681241177525004",
+                "time": "2026-08-05T10:00:00",
+                "category": "府衙招聘",
+                "score": 85
+            },
+            {
+                "id": "search_fuya_3",
+                "title": "2026年8月国新集团财务有限责任公司相关岗位招聘公告",
+                "summary": "中国国新控股旗下财务公司招聘信息管理部部门负责人、结算业务部司库管理岗，工作地点北京，报名截止8月16日。",
+                "source": "中国国新",
+                "url": "https://www.fenbi.com/page/fenxiaozhaokaodetail/8/159/468169250066432",
+                "time": "2026-08-05T10:00:00",
+                "category": "府衙招聘",
+                "score": 82
+            },
+            {
+                "id": "search_fuya_4",
+                "title": "四川省国有资产经营投资管理有限责任公司所属企业总经理、副总经理岗位公开选聘4人",
+                "summary": "所属企业总经理、副总经理岗位公开选聘4人，报名截止8月12日17:00。",
+                "source": "中公教育网",
+                "url": "https://m.offcn.com/gqzp/2026/0806/251461.html",
+                "time": "2026-08-06T10:00:00",
+                "category": "府衙招聘",
+                "score": 80
+            },
+            {
+                "id": "search_fuya_5",
+                "title": "自贡汇东建设工程有限责任公司市场化选聘职业经理人公告",
+                "summary": "面向社会市场化选聘公司总经理1名，要求累计8年及以上建筑行业工作经验，其中5年及以上企业中高层管理经验。",
+                "source": "中公教育网",
+                "url": "https://m.sc.offcn.com/html/2026/08/303642.html",
+                "time": "2026-08-05T10:00:00",
+                "category": "府衙招聘",
+                "score": 78
             }
         ]
     },
