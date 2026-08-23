@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-政务看板 - 腾讯云 SCF + GitHub Pages 版
+政务看板 - 腾讯云 SCF + GitHub Pages 版 (增强版)
 =============================================
 功能：
 1. 定时触发（每日 08:30 / 17:00）自动抓取政务新闻
-2. 从中央纪委、国资委、应急管理部、新华网、人民网等权威源抓取数据
+2. 从多个RSS源、门户网站、搜索引擎聚合抓取数据
 3. 按六大板块分类、去重、评分后生成看板 HTML
 4. 通过 GitHub API 更新仓库中的 index.html
 5. 通过 GitHub Pages URL 直接访问
@@ -33,7 +33,7 @@ import datetime
 from collections import defaultdict
 from difflib import SequenceMatcher
 
-# 创建不验证 SSL 证书的上下文（政府网站常使用自签名证书）
+# 创建不验证 SSL 证书的上下文
 _SSL_CTX = ssl.create_default_context()
 _SSL_CTX.check_hostname = False
 _SSL_CTX.verify_mode = ssl.CERT_NONE
@@ -43,22 +43,28 @@ _SSL_CTX.verify_mode = ssl.CERT_NONE
 TEMPLATE_PATH = "zhengwu-kanban.html"
 OUTPUT_PATH = "index.html"
 
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+# User-Agent 轮换池（模拟不同浏览器和设备，降低被屏蔽概率）
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
+    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+]
+
 FETCH_HEADERS = {
-    "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
     "Accept-Encoding": "gzip, deflate, br",
     "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
-    "Referer": "https://www.baidu.com/",
     "Cache-Control": "max-age=0",
 }
 
 RETRY_COUNT = 2
 RETRY_DELAY = 1
-
-TIMEOUT = 12
+TIMEOUT = 15
 MAX_PER_SECTION = 10
 SIMILARITY_THRESHOLD = 0.75
 
@@ -92,248 +98,67 @@ GD_REGION_KEYWORDS = [
 
 RSS_SOURCES = {
     # 官方权威源
-    "xinhua_politics": {
-        "url": "http://www.xinhuanet.com/politics/news_politics.xml",
-        "name": "新华网·时政",
-    },
-    "xinhua_local": {
-        "url": "http://www.xinhuanet.com/local/news_province.xml",
-        "name": "新华网·地方联播",
-    },
-    "xinhua_legal": {
-        "url": "http://www.xinhuanet.com/legal/news_legal.xml",
-        "name": "新华网·法治",
-    },
-    "xinhua_finance": {
-        "url": "http://www.xinhuanet.com/fortune/news_fortune.xml",
-        "name": "新华网·财经",
-    },
-    "people_politics": {
-        "url": "http://www.people.com.cn/rss/politics.xml",
-        "name": "人民网·时政",
-    },
-    "people_legal": {
-        "url": "http://www.people.com.cn/rss/legal.xml",
-        "name": "人民网·法治",
-    },
-    "people_all": {
-        "url": "http://www.people.com.cn/rss/ywkx.xml",
-        "name": "人民网·要闻快讯",
-    },
-    # 门户 RSS 源（补充官方源不足）
-    "sina_rss": {
-        "url": "https://rss.sina.com.cn/news/china/focus15.xml",
-        "name": "新浪新闻·国内",
-    },
-    "sina_focus": {
-        "url": "https://rss.sina.com.cn/news/china/focus15.xml",
-        "name": "新浪新闻·焦点",
-    },
-    "netease_rss": {
-        "url": "http://news.163.com/special/00011K6L/rss_newstop.xml",
-        "name": "网易新闻·头条",
-    },
-    "netease_guonei": {
-        "url": "http://news.163.com/special/00011K6L/rss_guonei.xml",
-        "name": "网易新闻·国内",
-    },
-    "sohu_rss": {
-        "url": "http://news.sohu.com/rss/guonei.xml",
-        "name": "搜狐新闻·国内",
-    },
-    "ifeng_rss": {
-        "url": "http://news.ifeng.com/rss/index.xml",
-        "name": "凤凰新闻",
-    },
-    "ifeng_guonei": {
-        "url": "http://news.ifeng.com/rss/guonei.xml",
-        "name": "凤凰新闻·国内",
-    },
-    "chinanews_rss": {
-        "url": "https://www.chinanews.com.cn/rss/scroll.xml",
-        "name": "中国新闻网",
-    },
-    "chinanews_gn": {
-        "url": "https://www.chinanews.com.cn/rss/gn.xml",
-        "name": "中国新闻网·国内",
-    },
-    "ce_rss": {
-        "url": "http://www.ce.cn/rss/",
-        "name": "中国经济网",
-    },
-    "ce_gdxw": {
-        "url": "http://www.ce.cn/rss/gdxw.xml",
-        "name": "中国经济网·滚动新闻",
-    },
-    "thepaper_rss": {
-        "url": "https://www.thepaper.cn/rssFeed_china.xml",
-        "name": "澎湃新闻·时政",
-    },
-    "huanqiu_rss": {
-        "url": "https://www.huanqiu.com/rss/",
-        "name": "环球网",
-    },
-    "guancha_rss": {
-        "url": "https://www.guancha.cn/rss.xml",
-        "name": "观察者网",
-    },
-    "cctv_news": {
-        "url": "https://news.cctv.com/china/rss.xml",
-        "name": "央视网·国内新闻",
-    },
-    "qq_news": {
-        "url": "https://news.qq.com/newsrss/qq_newschina.xml",
-        "name": "腾讯新闻·国内",
-    },
-    "yicai_rss": {
-        "url": "https://www.yicai.com/rss/",
-        "name": "第一财经",
-    },
-    "cs_rss": {
-        "url": "http://www.cs.com.cn/ssgs/rss.xml",
-        "name": "中国证券报",
-    },
+    "xinhua_politics": {"url": "http://www.xinhuanet.com/politics/news_politics.xml", "name": "新华网·时政"},
+    "xinhua_local": {"url": "http://www.xinhuanet.com/local/news_province.xml", "name": "新华网·地方"},
+    "xinhua_legal": {"url": "http://www.xinhuanet.com/legal/news_legal.xml", "name": "新华网·法治"},
+    "xinhua_finance": {"url": "http://www.xinhuanet.com/fortune/news_fortune.xml", "name": "新华网·财经"},
+    "people_politics": {"url": "http://www.people.com.cn/rss/politics.xml", "name": "人民网·时政"},
+    "people_legal": {"url": "http://www.people.com.cn/rss/legal.xml", "name": "人民网·法治"},
+    "people_all": {"url": "http://www.people.com.cn/rss/ywkx.xml", "name": "人民网·要闻"},
+    # 门户 RSS
+    "sina_rss": {"url": "https://rss.sina.com.cn/news/china/focus15.xml", "name": "新浪新闻"},
+    "netease_rss": {"url": "http://news.163.com/special/00011K6L/rss_newstop.xml", "name": "网易头条"},
+    "netease_guonei": {"url": "http://news.163.com/special/00011K6L/rss_guonei.xml", "name": "网易国内"},
+    "sohu_rss": {"url": "http://news.sohu.com/rss/guonei.xml", "name": "搜狐新闻"},
+    "ifeng_rss": {"url": "http://news.ifeng.com/rss/index.xml", "name": "凤凰新闻"},
+    "ifeng_guonei": {"url": "http://news.ifeng.com/rss/guonei.xml", "name": "凤凰国内"},
+    "chinanews_rss": {"url": "https://www.chinanews.com.cn/rss/scroll.xml", "name": "中新网"},
+    "chinanews_gn": {"url": "https://www.chinanews.com.cn/rss/gn.xml", "name": "中新网国内"},
+    "ce_gdxw": {"url": "http://www.ce.cn/rss/gdxw.xml", "name": "中国经济网"},
+    "thepaper_rss": {"url": "https://www.thepaper.cn/rssFeed_china.xml", "name": "澎湃新闻"},
+    "huanqiu_rss": {"url": "https://www.huanqiu.com/rss/", "name": "环球网"},
+    "guancha_rss": {"url": "https://www.guancha.cn/rss.xml", "name": "观察者网"},
+    "cctv_news": {"url": "https://news.cctv.com/china/rss.xml", "name": "央视网"},
+    "qq_news": {"url": "https://news.qq.com/newsrss/qq_newschina.xml", "name": "腾讯新闻"},
+    "yicai_rss": {"url": "https://www.yicai.com/rss/", "name": "第一财经"},
+    "cs_rss": {"url": "http://www.cs.com.cn/ssgs/rss.xml", "name": "中国证券报"},
+    # 额外补充源
+    "sina_zaobao": {"url": "https://rss.sina.com.cn/news/zaobao/rss.xml", "name": "新浪早报"},
+    "sina_gnzx": {"url": "https://rss.sina.com.cn/news/china/gnzx.xml", "name": "新浪国内"},
+    "netease_gdxw": {"url": "http://news.163.com/special/00011K6L/rss_gdxw.xml", "name": "网易滚动"},
+    "netease_guoji": {"url": "http://news.163.com/special/00011K6L/rss_guoji.xml", "name": "网易国际"},
+    "people_society": {"url": "http://www.people.com.cn/rss/society.xml", "name": "人民网·社会"},
+    "people_gn": {"url": "http://www.people.com.cn/rss/gn.xml", "name": "人民网·国内"},
 }
 
 WEB_SCRAPE_SOURCES = {
-    "xinhua_politics_web": {
-        "url": "http://www.news.cn/politics/",
-        "name": "新华网·时政",
-    },
-    "xinhua_renshi": {
-        "url": "http://www.news.cn/renshi/",
-        "name": "新华网·人事",
-    },
-    "xinhua_legal": {
-        "url": "http://www.news.cn/legal/",
-        "name": "新华网·法治",
-    },
-    "sasac_news": {
-        "url": "http://www.sasac.gov.cn/n2588025/n2588139/index.html",
-        "name": "国资委·国资动态",
-    },
-    "mem_news": {
-        "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-        "name": "应急管理部",
-    },
-    "ccdi_cases": {
-        "url": "https://www.ccdi.gov.cn/scdc/",
-        "name": "中央纪委·审查调查",
-    },
-    "gov_policy": {
-        "url": "https://www.gov.cn/lianbo/",
-        "name": "中国政府网·联播",
-    },
-    "people_renshi": {
-        "url": "http://renshi.people.com.cn/",
-        "name": "人民网·人事任免",
-    },
-    "people_politics_web": {
-        "url": "http://politics.people.com.cn/",
-        "name": "人民网·时政",
-    },
-    "people_legal_web": {
-        "url": "http://legal.people.com.cn/",
-        "name": "人民网·法治",
-    },
-    "ndrc_news": {
-        "url": "https://www.ndrc.gov.cn/xwdt/xwfb/",
-        "name": "发改委·新闻发布",
-    },
-    "cea_earthquake": {
-        "url": "https://www.cea.gov.cn/cea/dt/index.shtml",
-        "name": "中国地震局",
-    },
-    "sasac_yangqi": {
-        "url": "https://www.sasac.gov.cn/n2588035/n2588320/index.html",
-        "name": "国资委·央企动态",
-    },
-    "mem_accident": {
-        "url": "https://www.mem.gov.cn/gk/sgcc/",
-        "name": "应急管理部·事故通报",
-    },
-    "ccdi_scdc": {
-        "url": "https://www.ccdi.gov.cn/scs/nwt/",
-        "name": "中央纪委·审查调查",
-    },
-    "gd_gzw": {
-        "url": "http://gzw.gd.gov.cn/",
-        "name": "广东省国资委",
-    },
-    "sz_gzw": {
-        "url": "https://gzw.sz.gov.cn/gkmlpt/",
-        "name": "深圳市国资委",
-    },
-    "gd_gov": {
-        "url": "https://www.gd.gov.cn/gdywdt/zwdt/",
-        "name": "广东省人民政府·政务动态",
-    },
-    "sz_gov": {
-        "url": "https://www.sz.gov.cn/zwdt/",
-        "name": "深圳市人民政府·政务动态",
-    },
-    # 门户新闻网页（补充官方源不足）
-    "sina_news": {
-        "url": "https://news.sina.com.cn/china/",
-        "name": "新浪新闻·国内",
-    },
-    "sina_gov": {
-        "url": "https://news.sina.com.cn/gov/",
-        "name": "新浪新闻·政务",
-    },
-    "netease_news": {
-        "url": "https://news.163.com/domestic/",
-        "name": "网易新闻·国内",
-    },
-    "sohu_news": {
-        "url": "https://news.sohu.com/guonei/",
-        "name": "搜狐新闻·国内",
-    },
-    "ifeng_news": {
-        "url": "https://news.ifeng.com/c/",
-        "name": "凤凰新闻",
-    },
-    "thepaper": {
-        "url": "https://www.thepaper.cn/",
-        "name": "澎湃新闻",
-    },
-    "chinanews": {
-        "url": "https://www.chinanews.com.cn/gn/",
-        "name": "中国新闻网",
-    },
-    "ce_cn": {
-        "url": "http://www.ce.cn/xwzx/gnsz/gdxw/",
-        "name": "中国经济网",
-    },
-    "huanqiu": {
-        "url": "https://www.huanqiu.com/china/",
-        "name": "环球网·国内",
-    },
-    "guancha": {
-        "url": "https://www.guancha.cn/mainnews.shtml",
-        "name": "观察者网",
-    },
-    # 府衙招聘数据源
-    "gov_zhaolu": {
-        "url": "https://www.gov.cn/zhengce/zhengceku/search.htm?q=招聘公告",
-        "name": "中国政府网·招聘公告",
-    },
-    "sasac_zhaopin": {
-        "url": "https://www.sasac.gov.cn/n2588035/n2588320/index.html",
-        "name": "国资委·央企招聘",
-    },
-    "gd_gzw_zhaopin": {
-        "url": "http://gzw.gd.gov.cn/zwgk/rsxx/",
-        "name": "广东省国资委·人事信息",
-    },
-    "sz_gzw_zhaopin": {
-        "url": "https://gzw.sz.gov.cn/gkmlpt/",
-        "name": "深圳市国资委·招聘信息",
-    },
+    # 门户网站（移动端更友好）
+    "sina_news": {"url": "https://news.sina.com.cn/china/", "name": "新浪新闻"},
+    "sina_gov": {"url": "https://news.sina.com.cn/gov/", "name": "新浪政务"},
+    "netease_news": {"url": "https://news.163.com/domestic/", "name": "网易新闻"},
+    "sohu_news": {"url": "https://news.sohu.com/guonei/", "name": "搜狐新闻"},
+    "ifeng_news": {"url": "https://news.ifeng.com/c/", "name": "凤凰新闻"},
+    "thepaper": {"url": "https://www.thepaper.cn/", "name": "澎湃新闻"},
+    "chinanews": {"url": "https://www.chinanews.com.cn/gn/", "name": "中国新闻网"},
+    "huanqiu": {"url": "https://www.huanqiu.com/china/", "name": "环球网"},
+    "guancha": {"url": "https://www.guancha.cn/mainnews.shtml", "name": "观察者网"},
+    "ce_cn": {"url": "http://www.ce.cn/xwzx/gnsz/gdxw/", "name": "中国经济网"},
+    # 政府网站（云端可能不可用，但保留）
+    "gov_policy": {"url": "https://www.gov.cn/lianbo/", "name": "中国政府网"},
+    "sasac_yangqi": {"url": "https://www.sasac.gov.cn/n2588035/n2588320/index.html", "name": "国资委"},
+    "mem_accident": {"url": "https://www.mem.gov.cn/gk/sgcc/", "name": "应急管理部"},
+    "ccdi_scdc": {"url": "https://www.ccdi.gov.cn/scs/nwt/", "name": "中央纪委"},
+    "gd_gzw": {"url": "http://gzw.gd.gov.cn/", "name": "广东省国资委"},
+    "sz_gzw": {"url": "https://gzw.sz.gov.cn/gkmlpt/", "name": "深圳市国资委"},
+    "gd_gov": {"url": "https://www.gd.gov.cn/gdywdt/zwdt/", "name": "广东省政府"},
+    "sz_gov": {"url": "https://www.sz.gov.cn/zwdt/", "name": "深圳市政府"},
+    # 招聘相关
+    "sasac_zhaopin": {"url": "https://www.sasac.gov.cn/n2588035/n2588320/index.html", "name": "国资委招聘"},
+    "gd_gzw_zhaopin": {"url": "http://gzw.gd.gov.cn/zwgk/rsxx/", "name": "广东国资人事"},
 }
 
 
-# ===== 分类规则（与本地版完全一致）=====
+# ===== 分类规则 =====
 
 CATEGORY_RULES = {
     "zhengtou": {
@@ -532,6 +357,14 @@ CATEGORY_RULES = {
 
 # ===== 工具函数 =====
 
+def get_headers():
+    """返回随机User-Agent的请求头"""
+    import random
+    headers = dict(FETCH_HEADERS)
+    headers["User-Agent"] = random.choice(USER_AGENTS)
+    return headers
+
+
 def calculate_gd_region_bonus(text):
     max_bonus = 0
     for kw, pts in GD_REGION_KEYWORDS:
@@ -549,30 +382,28 @@ def is_stale_content(text):
 
 
 def strip_tags(text):
-    """去除 HTML 标签"""
     return re.sub(r'<[^>]+>', '', text).strip()
 
 
 def fetch_url(url, timeout=TIMEOUT, retries=RETRY_COUNT):
-    """用 urllib 抓取 URL，自动处理编码、SSL、Cookie 和重试"""
+    """用 urllib 抓取 URL，支持随机UA和重试"""
     last_error = None
     for attempt in range(retries + 1):
         try:
-            # 创建支持 Cookie 的 opener（解决政府网站重定向循环）
             cookie_handler = urllib.request.HTTPCookieProcessor()
             opener = urllib.request.build_opener(
                 cookie_handler,
                 urllib.request.HTTPSHandler(context=_SSL_CTX),
             )
-            req = urllib.request.Request(url, headers=FETCH_HEADERS)
+            headers = get_headers()
+            headers["Referer"] = "https://www.baidu.com/"
+            req = urllib.request.Request(url, headers=headers)
             with opener.open(req, timeout=timeout) as resp:
                 raw = resp.read()
-                # 检测编码
                 content_type = resp.headers.get('Content-Type', '')
                 charset = None
                 if 'charset=' in content_type:
                     charset = content_type.split('charset=')[-1].strip().strip('"')
-                # 尝试从 HTML meta 标签检测编码
                 if not charset:
                     head = raw[:2048].decode('ascii', errors='ignore')
                     m = re.search(r'charset=["\']?([\w-]+)', head, re.IGNORECASE)
@@ -590,10 +421,9 @@ def fetch_url(url, timeout=TIMEOUT, retries=RETRY_COUNT):
         except Exception as e:
             last_error = e
             if attempt < retries:
-                print(f"  重试 {attempt+1}/{retries}: {url}")
                 time.sleep(RETRY_DELAY)
             continue
-    print(f"  抓取失败: {url} -- {last_error}")
+    print(f"  [FAIL] 抓取失败: {url} -- {last_error}")
     return None
 
 
@@ -604,16 +434,13 @@ def parse_rss(url, source_name):
         return []
 
     articles = []
-    # 提取所有 <item> 块
     items = re.findall(r'<item[^>]*>(.*?)</item>', xml, re.DOTALL | re.IGNORECASE)
     if not items:
-        # 有些 RSS 用 <entry> 标签
         items = re.findall(r'<entry[^>]*>(.*?)</entry>', xml, re.DOTALL | re.IGNORECASE)
 
     for item in items[:60]:
         title_m = re.search(r'<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', item, re.DOTALL)
         link_m = re.search(r'<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>', item, re.DOTALL)
-        # link 可能是 <link/> 自闭合标签
         if not link_m:
             link_m = re.search(r'<link[^>]*href=["\']([^"\']+)["\']', item)
         desc_m = re.search(r'<description[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</description>', item, re.DOTALL)
@@ -638,12 +465,10 @@ def parse_rss(url, source_name):
             continue
 
         dt = _parse_datetime(time_str=published, url=link)
-        # RSS 无日期时默认今天（很多门户 RSS 无日期但内容最新）
         if not dt:
             dt = datetime.datetime.now()
 
-        # 7天内都保留
-        if not _is_recent(dt, max_age_hours=168):
+        if not _is_recent(dt, max_age_hours=336):  # 14天内
             continue
 
         articles.append({
@@ -668,14 +493,12 @@ def scrape_webpage(url, source_name):
     seen_urls = set()
     now = datetime.datetime.now()
 
-    # 提取所有 <a> 标签
     pattern = r'<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>'
     for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
         href = m.group(1)
         inner = m.group(2)
         title = strip_tags(inner).strip()
 
-        # 如果 inner 为空，尝试从 title 属性获取
         if not title and 'title=' in m.group(0):
             tm = re.search(r'title=["\']([^"\']+)["\']', m.group(0))
             if tm:
@@ -684,16 +507,13 @@ def scrape_webpage(url, source_name):
         if not title or len(title) < 8:
             continue
 
-        # 过滤非新闻链接
         if not href or href.startswith("javascript:") or href == "#" or href.startswith("mailto:"):
             continue
         if any(kw in href for kw in [".jpg", ".png", ".gif", ".mp4", ".pdf", "/login", "/register"]):
             continue
-        # 过滤导航、广告、专题等
         if any(kw in title for kw in ["更多", "下一页", "上一页", "登录", "注册", "专题", "组图", "视频"]):
             continue
 
-        # 补全 URL
         if not href.startswith("http"):
             domain = "/".join(url.split("/")[:3])
             if href.startswith("/"):
@@ -710,10 +530,7 @@ def scrape_webpage(url, source_name):
         if is_stale_content(title):
             continue
 
-        # 从 URL 提取日期
         dt = _parse_datetime(url=href)
-
-        # 从周围 HTML 内容提取日期和摘要
         start = max(0, m.start() - 300)
         end = min(len(html), m.end() + 300)
         context = html[start:end]
@@ -721,17 +538,12 @@ def scrape_webpage(url, source_name):
         if not dt:
             dt = _parse_datetime_from_context(context)
 
-        # 提取摘要（从上下文中的 p 标签或纯文本）
         summary = ""
-        if not summary:
-            # 尝试从上下文提取一段文字
-            text_ctx = strip_tags(context).replace(title, "").strip()
-            # 清理多余空白
-            text_ctx = re.sub(r'\s+', ' ', text_ctx)
-            if len(text_ctx) > 20:
-                summary = text_ctx[:200]
+        text_ctx = strip_tags(context).replace(title, "").strip()
+        text_ctx = re.sub(r'\s+', ' ', text_ctx)
+        if len(text_ctx) > 20:
+            summary = text_ctx[:200]
 
-        # 如果仍然没有日期，假设为今天
         if not dt:
             dt = now
 
@@ -750,11 +562,10 @@ def scrape_webpage(url, source_name):
     return articles
 
 
-def scrape_news_search(query, source_name="新闻搜索"):
-    """
-    从百度新闻搜索抓取结果，作为数据源兜底。
-    百度新闻对云服务器相对友好，且能覆盖各类政务关键词。
-    """
+# ===== 搜索引擎聚合抓取 =====
+
+def scrape_baidu_news(query, source_name="百度新闻"):
+    """从百度新闻搜索抓取结果"""
     try:
         encoded = urllib.parse.quote(query)
     except Exception:
@@ -769,9 +580,78 @@ def scrape_news_search(query, source_name="新闻搜索"):
     seen_urls = set()
     now = datetime.datetime.now()
 
-    # 百度新闻结果结构：
-    # <h3 class="c-title"><a href="...">标题</a></h3>
-    pattern = r'<h3[^>]*class=["\']c-title["\'][^>]*>\s*<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>'
+    # 百度新闻结果：多种可能的结构
+    patterns = [
+        r'<h3[^>]*class=["\']c-title["\'][^>]*>\s*<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>',
+        r'<a[^>]*href=["\']([^"\']+)["\'][^>]*class=["\'][^"\']*title[^"\']*["\'][^>]*>(.*?)</a>',
+        r'<a[^>]*href=["\']([^"\']+)["\'][^>]*>\s*(.*?)\s*</a>\s*<span[^>]*class=["\']news-source["\']',
+    ]
+
+    for pattern in patterns:
+        for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
+            href = m.group(1)
+            title = strip_tags(m.group(2)).strip()
+
+            if not title or len(title) < 8 or len(title) > 100:
+                continue
+            if href in seen_urls:
+                continue
+            seen_urls.add(href)
+
+            # 百度跳转链接解码
+            if href.startswith("http://news.baidu.com/ns?") or href.startswith("https://news.baidu.com/ns?"):
+                real_m = re.search(r'url=([^&]+)', href)
+                if real_m:
+                    try:
+                        href = urllib.parse.unquote(real_m.group(1))
+                    except Exception:
+                        pass
+
+            if is_stale_content(title):
+                continue
+            if any(kw in title for kw in ["百度", "推广", "广告", "登录", "注册"]):
+                continue
+
+            dt = _parse_datetime(url=href) or now
+
+            articles.append({
+                "title": title[:100],
+                "url": href,
+                "summary": "",
+                "time": dt,
+                "time_str": _format_time(dt),
+                "source": source_name,
+            })
+
+            if len(articles) >= 30:
+                break
+        if len(articles) >= 30:
+            break
+
+    return articles
+
+
+def scrape_sogou_weixin(query, source_name="搜狗微信"):
+    """从搜狗微信搜索抓取公众号文章（政务新闻覆盖很好）"""
+    try:
+        encoded = urllib.parse.quote(query)
+    except Exception:
+        encoded = urllib.parse.quote(query.encode('utf-8'))
+    search_url = f"https://weixin.sogou.com/weixin?type=2&query={encoded}&ie=utf8"
+
+    headers = get_headers()
+    headers["Referer"] = "https://weixin.sogou.com/"
+
+    html = fetch_url(search_url, timeout=15)
+    if not html:
+        return []
+
+    articles = []
+    seen_urls = set()
+    now = datetime.datetime.now()
+
+    # 搜狗微信结果结构
+    pattern = r'<li[^>]*id=["\']sogou_vr_[\d_]+["\'][^>]*>.*?<h3>.*?<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>.*?</h3>.*?</li>'
     for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
         href = m.group(1)
         title = strip_tags(m.group(2)).strip()
@@ -782,19 +662,11 @@ def scrape_news_search(query, source_name="新闻搜索"):
             continue
         seen_urls.add(href)
 
-        # 百度跳转链接需要解码
-        if href.startswith("http://news.baidu.com/ns?"):
-            real_m = re.search(r'url=([^&]+)', href)
-            if real_m:
-                try:
-                    href = urllib.parse.unquote(real_m.group(1))
-                except Exception:
-                    pass
+        # 搜狗微信链接需要补全
+        if not href.startswith("http"):
+            href = "https://weixin.sogou.com" + href
 
-        # 过滤广告和无关内容
         if is_stale_content(title):
-            continue
-        if any(kw in title for kw in ["百度", "推广", "广告", "登录", "注册"]):
             continue
 
         dt = _parse_datetime(url=href) or now
@@ -808,46 +680,258 @@ def scrape_news_search(query, source_name="新闻搜索"):
             "source": source_name,
         })
 
-        if len(articles) >= 30:
+        if len(articles) >= 20:
+            break
+
+    # 备用pattern
+    if not articles:
+        pattern2 = r'<a[^>]*target=["\']_blank["\'][^>]*href=["\']([^"\']+)["\'][^>]*>\s*(.*?)\s*</a>'
+        for m in re.finditer(pattern2, html, re.DOTALL | re.IGNORECASE):
+            href = m.group(1)
+            title = strip_tags(m.group(2)).strip()
+            if not title or len(title) < 8 or len(title) > 100:
+                continue
+            if href in seen_urls:
+                continue
+            seen_urls.add(href)
+            if not href.startswith("http"):
+                href = "https://weixin.sogou.com" + href
+            if is_stale_content(title):
+                continue
+            dt = _parse_datetime(url=href) or now
+            articles.append({
+                "title": title[:100],
+                "url": href,
+                "summary": "",
+                "time": dt,
+                "time_str": _format_time(dt),
+                "source": source_name,
+            })
+            if len(articles) >= 20:
+                break
+
+    return articles
+
+
+def scrape_toutiao_search(query, source_name="头条搜索"):
+    """从头条搜索抓取新闻"""
+    try:
+        encoded = urllib.parse.quote(query)
+    except Exception:
+        encoded = urllib.parse.quote(query.encode('utf-8'))
+    search_url = f"https://so.toutiao.com/search?keyword={encoded}&pd=news&source=search_subtab_switch"
+
+    html = fetch_url(search_url, timeout=15)
+    if not html:
+        return []
+
+    articles = []
+    seen_urls = set()
+    now = datetime.datetime.now()
+
+    # 尝试从JSON数据中提取
+    json_matches = re.findall(r'"title":"([^"]+)".*?"url":"([^"]+)"', html)
+    for title, url in json_matches:
+        title = title.encode('utf-8').decode('unicode_escape') if '\\u' in title else title
+        title = strip_tags(title).strip()
+        if not title or len(title) < 8:
+            continue
+        if url in seen_urls:
+            continue
+        seen_urls.add(url)
+        if is_stale_content(title):
+            continue
+        dt = _parse_datetime(url=url) or now
+        articles.append({
+            "title": title[:100],
+            "url": url,
+            "summary": "",
+            "time": dt,
+            "time_str": _format_time(dt),
+            "source": source_name,
+        })
+        if len(articles) >= 20:
             break
 
     return articles
 
 
-def fallback_category_search(categories=None):
+def scrape_bing_news(query, source_name="必应新闻"):
+    """从必应新闻搜索抓取"""
+    try:
+        encoded = urllib.parse.quote(query)
+    except Exception:
+        encoded = urllib.parse.quote(query.encode('utf-8'))
+    search_url = f"https://cn.bing.com/news/search?q={encoded}&FORM=HDRSC7"
+
+    html = fetch_url(search_url, timeout=15)
+    if not html:
+        return []
+
+    articles = []
+    seen_urls = set()
+    now = datetime.datetime.now()
+
+    pattern = r'<a[^>]*class=["\']title["\'][^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>'
+    for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
+        href = m.group(1)
+        title = strip_tags(m.group(2)).strip()
+
+        if not title or len(title) < 8:
+            continue
+        if href in seen_urls:
+            continue
+        seen_urls.add(href)
+
+        if is_stale_content(title):
+            continue
+
+        dt = _parse_datetime(url=href) or now
+
+        articles.append({
+            "title": title[:100],
+            "url": href,
+            "summary": "",
+            "time": dt,
+            "time_str": _format_time(dt),
+            "source": source_name,
+        })
+
+        if len(articles) >= 20:
+            break
+
+    return articles
+
+
+def scrape_360_news(query, source_name="360新闻"):
+    """从360新闻搜索抓取"""
+    try:
+        encoded = urllib.parse.quote(query)
+    except Exception:
+        encoded = urllib.parse.quote(query.encode('utf-8'))
+    search_url = f"https://news.so.com/ns?q={encoded}&tn=news&rank=pdate&src=srp"
+
+    html = fetch_url(search_url, timeout=15)
+    if not html:
+        return []
+
+    articles = []
+    seen_urls = set()
+    now = datetime.datetime.now()
+
+    pattern = r'<h3[^>]*>\s*<a[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>\s*</h3>'
+    for m in re.finditer(pattern, html, re.DOTALL | re.IGNORECASE):
+        href = m.group(1)
+        title = strip_tags(m.group(2)).strip()
+
+        if not title or len(title) < 8:
+            continue
+        if href in seen_urls:
+            continue
+        seen_urls.add(href)
+
+        if is_stale_content(title):
+            continue
+
+        dt = _parse_datetime(url=href) or now
+
+        articles.append({
+            "title": title[:100],
+            "url": href,
+            "summary": "",
+            "time": dt,
+            "time_str": _format_time(dt),
+            "source": source_name,
+        })
+
+        if len(articles) >= 20:
+            break
+
+    return articles
+
+
+# ===== 按板块搜索 =====
+
+def search_by_category():
     """
-    当板块数据不足时，用百度新闻搜索兜底补充。
-    分别搜索每个板块的核心关键词，获取最新新闻。
+    按板块使用多个搜索引擎抓取，每个板块用多个关键词组合搜索。
+    这是核心兜底策略，确保每个板块都有数据。
     """
-    if categories is None:
-        categories = {
-            "dahu": "中央纪委 落马 双开 审查调查 2026年",
-            "gaoshan": "干部任免 省委书记 履新 任前公示 2026年",
-            "zhengtou": "发改委 批复 重大项目 投资 签约 2026年",
-            "tufa": "应急管理部 台风 地震 洪水 事故 2026年",
-            "guoqi": "国资委 国企改革 央企 利润 2026年",
-            "fuya": "国企招聘 央企招聘 公开招聘 2026年",
-        }
+    search_configs = {
+        "dahu": [
+            ("落马 2026", "百度"),
+            ("双开 2026", "搜狗微信"),
+            ("审查调查 2026", "360新闻"),
+            ("中央纪委 2026", "必应"),
+        ],
+        "gaoshan": [
+            ("任命 2026", "百度"),
+            ("干部任免 2026", "搜狗微信"),
+            ("履新 2026", "360新闻"),
+            ("任前公示 2026", "必应"),
+        ],
+        "zhengtou": [
+            ("重大项目 签约 2026", "百度"),
+            ("发改委 批复 2026", "搜狗微信"),
+            ("投资 开工 2026", "360新闻"),
+            ("专项债 2026", "必应"),
+        ],
+        "tufa": [
+            ("应急管理部 事故 2026", "百度"),
+            ("台风 2026", "搜狗微信"),
+            ("地震 2026", "360新闻"),
+            ("安全生产 2026", "必应"),
+        ],
+        "guoqi": [
+            ("国资委 央企 2026", "百度"),
+            ("国企改革 2026", "搜狗微信"),
+            ("国有企业 2026", "360新闻"),
+            ("央企利润 2026", "必应"),
+        ],
+        "fuya": [
+            ("国企招聘 2026", "百度"),
+            ("央企招聘 2026", "搜狗微信"),
+            ("公开招聘 2026", "360新闻"),
+            ("事业单位招聘 2026", "必应"),
+        ],
+    }
 
     all_articles = []
-    for cat_id, query in categories.items():
-        print(f"  兜底搜索 [{cat_id}]: {query}")
-        arts = scrape_news_search(query, source_name="新闻搜索·" + cat_id)
-        print(f"    -> {len(arts)} 条")
-        all_articles.extend(arts)
-        time.sleep(0.5)
+    search_functions = {
+        "百度": scrape_baidu_news,
+        "搜狗微信": scrape_sogou_weixin,
+        "360新闻": scrape_360_news,
+        "必应": scrape_bing_news,
+        "头条": scrape_toutiao_search,
+    }
+
+    for cat_id, queries in search_configs.items():
+        for query, engine in queries:
+            fn = search_functions.get(engine, scrape_baidu_news)
+            try:
+                arts = fn(query, source_name=f"{engine}·{cat_id}")
+                if arts:
+                    print(f"  [OK] {engine} 搜索 [{cat_id}]: {query} -> {len(arts)} 条")
+                    all_articles.extend(arts)
+                else:
+                    print(f"  [FAIL] {engine} 搜索 [{cat_id}]: {query} -> 0 条")
+            except Exception as e:
+                print(f"  [ERR] {engine} 搜索 [{cat_id}]: {query} -> {e}")
+            time.sleep(0.3)
 
     return all_articles
 
 
+# ===== 日期解析 =====
+
 def _parse_datetime_from_context(context):
-    """从 HTML 上下文中提取日期"""
     date_patterns = [
         r'(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})',
         r'(\d{4})-(\d{2})-(\d{2})',
         r'(\d{4})年(\d{1,2})月(\d{1,2})日\s*(\d{2}):(\d{2})',
         r'(\d{4})年(\d{1,2})月(\d{1,2})日',
         r'\[(\d{4})-(\d{2})-(\d{2})\]',
+        r'(\d{4})/(\d{1,2})/(\d{1,2})',
     ]
     for dp in date_patterns:
         dm = re.search(dp, context)
@@ -865,20 +949,15 @@ def _parse_datetime_from_context(context):
 
 
 def _parse_datetime(time_str="", url=None):
-    """解析文章时间，返回 datetime 对象"""
-    # 1. 从 URL 路径提取日期
     if url:
-        # 标准格式：/2026-08-10/ 或 /2026/08/10/
         m = re.search(r'/(\d{4})-(\d{2})/?(\d{2})/', url)
         if not m:
             m = re.search(r'/(\d{4})/(\d{2})/(\d{2})/', url)
-        # 网易格式：/26/0810/10/
         if not m:
             m = re.search(r'/(\d{2})/(\d{2})(\d{2})/\d{2}/', url)
             if m:
                 year = 2000 + int(m.group(1))
                 return datetime.datetime(year, int(m.group(2)), int(m.group(3)))
-        # 紧凑格式：/20260810/
         if not m:
             m = re.search(r'/(\d{4})(\d{2})(\d{2})/', url)
         if m:
@@ -887,10 +966,8 @@ def _parse_datetime(time_str="", url=None):
             except ValueError:
                 pass
 
-    # 2. 字符串日期解析
     if time_str:
         time_str = time_str.strip()
-        # [YYYY-MM-DD] 格式
         m = re.search(r'\[(\d{4})-(\d{2})-(\d{2})\]', time_str)
         if m:
             try:
@@ -916,7 +993,7 @@ def _format_time(dt=None):
     return f"{dt.month}月{dt.day}日"
 
 
-def _is_recent(dt, max_age_hours=48):
+def _is_recent(dt, max_age_hours=336):
     if dt is None:
         return False
     now = datetime.datetime.now()
@@ -924,8 +1001,9 @@ def _is_recent(dt, max_age_hours=48):
     return delta.total_seconds() <= max_age_hours * 3600
 
 
+# ===== 分类与排序 =====
+
 def classify_article_with_scores(article):
-    """对文章进行分类，返回 [(cat_id, total_score), ...] 列表"""
     title = article.get("title", "")
     summary = article.get("summary", "")
     text = f"{title} {summary}"
@@ -1101,32 +1179,32 @@ def fetch_all_articles():
         articles = parse_rss(source_info["url"], source_info["name"])
         all_articles.extend(articles)
         if articles:
-            print(f"  OK {source_info['name']}: {len(articles)} 条")
+            print(f"  [OK] {source_info['name']}: {len(articles)} 条")
             rss_success += 1
         else:
-            print(f"  FAIL {source_info['name']}: 0 条")
+            print(f"  [FAIL] {source_info['name']}: 0 条")
 
     print("第二阶段: 网页直接抓取...")
     for source_id, source_info in WEB_SCRAPE_SOURCES.items():
         articles = scrape_webpage(source_info["url"], source_info["name"])
         all_articles.extend(articles)
         if articles:
-            print(f"  OK {source_info['name']}: {len(articles)} 条")
+            print(f"  [OK] {source_info['name']}: {len(articles)} 条")
             web_success += 1
         else:
-            print(f"  FAIL {source_info['name']}: 0 条")
+            print(f"  [FAIL] {source_info['name']}: 0 条")
 
-    print("第三阶段: 兜底搜索补充...")
-    fallback_articles = fallback_category_search()
-    if fallback_articles:
-        print(f"  OK 兜底搜索: {len(fallback_articles)} 条")
-        all_articles.extend(fallback_articles)
+    print("第三阶段: 搜索引擎聚合抓取...")
+    search_articles = search_by_category()
+    if search_articles:
+        print(f"  [OK] 搜索引擎聚合: {len(search_articles)} 条")
+        all_articles.extend(search_articles)
     else:
-        print(f"  FAIL 兜底搜索: 0 条")
+        print(f"  [FAIL] 搜索引擎聚合: 0 条")
 
-    # 全局日期过滤：7天
+    # 全局日期过滤：14天
     before = len(all_articles)
-    all_articles = [a for a in all_articles if a.get("time") and _is_recent(a["time"], max_age_hours=168)]
+    all_articles = [a for a in all_articles if a.get("time") and _is_recent(a["time"], max_age_hours=336)]
     dropped = before - len(all_articles)
     if dropped:
         print(f"全局日期过滤: 丢弃 {dropped} 条过期/无日期新闻, 保留 {len(all_articles)} 条")
@@ -1164,8 +1242,8 @@ def build_sections(categorized):
     sections = []
 
     SECTION_TIME_WINDOWS = {
-        "dahu": 96, "gaoshan": 96, "fuya": 336,
-        "zhengtou": 96, "tufa": 72, "guoqi": 96,
+        "dahu": 168, "gaoshan": 168, "fuya": 336,
+        "zhengtou": 168, "tufa": 72, "guoqi": 168,
     }
 
     for cat_id in ["dahu", "gaoshan", "fuya", "zhengtou", "tufa", "guoqi"]:
@@ -1174,7 +1252,7 @@ def build_sections(categorized):
 
         arts = deduplicate(arts)
 
-        max_hours = SECTION_TIME_WINDOWS.get(cat_id, 96)
+        max_hours = SECTION_TIME_WINDOWS.get(cat_id, 168)
         arts = [a for a in arts if a.get("time") and _is_recent(a["time"], max_age_hours=max_hours)]
 
         def _sort_key(a):
@@ -1212,6 +1290,19 @@ def build_sections(categorized):
             }
             items.append(item)
 
+        # 如果板块没有数据，添加提示信息
+        if not items:
+            items.append({
+                "id": generate_id(f"no_data_{cat_id}"),
+                "title": "暂无可展示的新闻数据",
+                "summary": "当前抓取渠道可能暂时受限，请稍后刷新或检查数据源。",
+                "source": "系统提示",
+                "time": "",
+                "url": "",
+                "tags": [],
+                "_ts": 0,
+            })
+
         section = {
             "id": cat_id,
             "label": rules["label"],
@@ -1220,7 +1311,6 @@ def build_sections(categorized):
             "items": items,
         }
 
-        # 打虎台附加统计数据
         if cat_id == "dahu":
             section["dahuStats"] = {
                 "total2026": 5834,
@@ -1257,7 +1347,6 @@ def generate_html(sections, template_html):
     after = template_html[end_idx + len(end_marker):]
     new_html = before + "// __KANBAN_DATA_START__\n" + new_data + "\n// __KANBAN_DATA_END__" + after
 
-    # 替换日期为今天
     now_bj = datetime.datetime.now(BEIJING_TZ)
     today_str = f"{now_bj.year}年{now_bj.month}月{now_bj.day}日"
     new_html = re.sub(
@@ -1287,7 +1376,6 @@ def github_get_file(owner, repo, path, branch, token):
             data = json.loads(resp.read().decode("utf-8"))
             sha = data.get("sha", "")
             content_b64 = data.get("content", "")
-            # GitHub API 返回的 content 是 base64 编码的，可能包含换行符
             content_b64_clean = content_b64.replace("\n", "")
             content = base64.b64decode(content_b64_clean).decode("utf-8")
             return content, sha
@@ -1337,7 +1425,7 @@ def github_upload_file(html_content, owner, repo, path, branch, token, sha=None)
 def main_handler(event, context):
     """腾讯云 SCF 入口函数"""
     print("=" * 50)
-    print("政务看板 SCF 云函数启动")
+    print("政务看板 SCF 云函数启动 (增强版)")
     print(f"时间: {datetime.datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S')} 北京时间")
     print("=" * 50)
 
@@ -1355,7 +1443,6 @@ def main_handler(event, context):
         }
 
     try:
-        # 1. 获取模板 HTML
         print("步骤1: 获取模板 HTML...")
         template_html, template_sha = github_get_file(owner, repo, TEMPLATE_PATH, branch, token)
         if not template_html:
@@ -1365,40 +1452,34 @@ def main_handler(event, context):
             }
         print(f"  模板获取成功: {len(template_html)} 字节")
 
-        # 2. 抓取数据
         print("步骤2: 抓取政务新闻数据...")
         articles = fetch_all_articles()
 
-        # 3. 分类
         print("步骤3: 分类与去重...")
         categorized = classify_and_group(articles)
 
-        # 4. 构建板块
         print("步骤4: 构建板块数据...")
         sections = build_sections(categorized)
 
-        # 5. 生成 HTML
         print("步骤5: 生成看板 HTML...")
         html_content = generate_html(sections, template_html)
 
-        # 6. 获取 index.html 的 SHA
         print("步骤6: 获取 index.html 当前 SHA...")
         _, index_sha = github_get_file(owner, repo, OUTPUT_PATH, branch, token)
 
-        # 7. 上传到 GitHub
-        print("步骤7: 上传到 GitHub Pages...")
+        print("步骤7: 上传到 GitHub...")
         commit_sha = github_upload_file(
             html_content, owner, repo, OUTPUT_PATH, branch, token, index_sha)
 
         total = sum(len(s["items"]) for s in sections)
+        real_total = sum(len([i for i in s["items"] if i.get("url")]) for s in sections)
         print("=" * 50)
-        print(f"完成! 总计 {total} 条新闻, {len(sections)} 个板块")
+        print(f"完成! 总计 {total} 条展示 ({real_total} 条有效新闻), {len(sections)} 个板块")
         print(f"Commit: {commit_sha[:8]}")
         print(f"GitHub Pages: https://{owner}.github.io/{repo}/")
         print("=" * 50)
 
-        # 构建板块统计
-        stats = {s["id"]: len(s["items"]) for s in sections}
+        stats = {s["id"]: len([i for i in s["items"] if i.get("url")]) for s in sections}
 
         return {
             "isBase64Encoded": False,
@@ -1407,7 +1488,7 @@ def main_handler(event, context):
             "body": json.dumps({
                 "code": 0,
                 "message": "政务看板更新成功",
-                "total": total,
+                "total": real_total,
                 "commit": commit_sha[:8],
                 "sections": stats,
                 "updateTime": datetime.datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S'),
@@ -1428,7 +1509,6 @@ def main_handler(event, context):
 # ===== 本地测试入口 =====
 
 if __name__ == "__main__":
-    # 本地测试时需要设置环境变量 GITHUB_TOKEN
     if not os.environ.get("GITHUB_TOKEN"):
         print("请设置环境变量 GITHUB_TOKEN")
         print("示例: export GITHUB_TOKEN=ghp_xxxxxxxxxxxx")
