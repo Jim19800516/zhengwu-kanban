@@ -1,5 +1,5 @@
 """
-搜索数据补丁 - 自动生成于 2026-09-06 09:10
+搜索数据补丁 - 自动生成于 2026-09-06 18:26
 """
 import datetime
 
@@ -8,11 +8,11 @@ sections = [
         "id": "dahu",
         "title": "🐯 打虎台",
         "dahuStats": {
-            "total2026": 5906,
+            "total2026": 5916,
             "shengbu": 24,
-            "tingju": 198,
-            "xianchu": 1301,
-            "others": 4383,
+            "tingju": 199,
+            "xianchu": 1305,
+            "others": 4388,
             "updateDate": "2026年9月6日"
         },
         "items": [
@@ -122,10 +122,10 @@ sections = [
         "id": "gaoshan",
         "title": "🏔 高山流水",
         "dahuStats": {
-            "total2026": 422,
+            "total2026": 424,
             "shengbu": 18,
-            "tingju": 68,
-            "xianchu": 202,
+            "tingju": 69,
+            "xianchu": 203,
             "others": 134,
             "updateDate": "2026年9月6日"
         },
@@ -162,13 +162,13 @@ sections = [
             },
             {
                 "id": "search_gaoshan_4",
-                "title": "云南省文山州发布干部任前公示 黄成生等4人拟任新职",
-                "summary": "文山州委组织部公示，黄成生拟提名为县市政协主席候选人，杨益章拟任州直单位正处级领导职务，谢金年拟任州属学校正职。",
-                "source": "文山州人民政府",
-                "url": "https://www.ynws.gov.cn/wszzf/rqgs/pc/content/content_2094948524794089472.html",
-                "time": "2026-09-02T09:00:00",
+                "title": "湖北省委组织部发布干部任前公示 王发读等5人拟任新职",
+                "summary": "湖北省委组织部公示，省委组织部副部长王发读拟任市州正厅级领导职务，湖北大学校长刘建平拟任省属本科院校党委书记。",
+                "source": "中国网湖北",
+                "url": "https://hb.china.com.cn/2026-08/31/content_43484346.htm",
+                "time": "2026-08-31T09:00:00",
                 "category": "高山流水",
-                "score": 85
+                "score": 87
             },
             {
                 "id": "search_gaoshan_5",
@@ -196,11 +196,11 @@ sections = [
         "id": "zhengtou",
         "title": "💼 政投先机",
         "dahuStats": {
-            "total2026": 298,
+            "total2026": 302,
             "shengbu": 9,
-            "tingju": 45,
-            "xianchu": 118,
-            "others": 126,
+            "tingju": 46,
+            "xianchu": 120,
+            "others": 127,
             "updateDate": "2026年9月6日"
         },
         "items": [
@@ -290,93 +290,93 @@ sections = [
         "id": "tufa",
         "title": "⚠ 突发事件",
         "dahuStats": {
-            "total2026": 212,
+            "total2026": 215,
             "shengbu": 6,
-            "tingju": 42,
-            "xianchu": 90,
-            "others": 74,
+            "tingju": 43,
+            "xianchu": 91,
+            "others": 75,
             "updateDate": "2026年9月6日"
         },
         "items": [
             {
                 "id": "search_tufa_1",
-                "title": "应急管理部调度江西遂川县高坪镇泥石流灾害救援 启动四级应急响应",
-                "summary": "应急管理部调度江西省遂川县高坪镇泥石流灾害救援处置工作，启动国家自然灾害救助和国家地质灾害四级应急响应并派工作组赶赴现场。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-                "time": "2026-09-05T14:08:00",
+                "title": "台风沙德尔已致江西18.36万人受灾 直接经济损失3.43亿元",
+                "summary": "截至9月5日16时，台风沙德尔造成江西10个设区市59个县18.36万人受灾，1人死亡11人失联，直接经济损失3.43亿元。",
+                "source": "人民网",
+                "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_6796a9ccd1466552",
+                "time": "2026-09-06T09:00:00",
                 "category": "突发事件",
                 "score": 96
             },
             {
                 "id": "search_tufa_2",
-                "title": "台风沙德尔深入赣湘 福建提升自然灾害救助应急响应至三级",
-                "summary": "国家防减救灾委、应急管理部针对福建提升国家自然灾害救助应急响应级别至三级，指导支持做好台风和洪涝灾害救助工作。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-                "time": "2026-09-05T13:18:00",
+                "title": "江西遂川泥石流失联减至10人 消防持续搜救",
+                "summary": "受台风沙德尔强降雨影响，江西遂川高坪镇明坑村泥石流已造成2人死亡、10人失联，各级消防等救援力量共41车224人现场处置。",
+                "source": "九派新闻",
+                "url": "https://new.qq.com/rain/a/20260906A06P9400",
+                "time": "2026-09-06T09:00:00",
                 "category": "突发事件",
                 "score": 95
             },
             {
                 "id": "search_tufa_3",
+                "title": "应急管理部持续调度部署台风沙德尔防范应对工作",
+                "summary": "国家防总办公室、应急管理部组织多部门及7个重点省份联合会商，研判台风和强降雨发展趋势，部署防汛防台风工作。",
+                "source": "应急管理部",
+                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/202609/t20260901_710042.shtml",
+                "time": "2026-09-01T09:00:00",
+                "category": "突发事件",
+                "score": 93
+            },
+            {
+                "id": "search_tufa_4",
                 "title": "福建莆田内涝致房屋倒塌 台风沙德尔停编后复活",
                 "summary": "受台风沙德尔带来的强降雨影响，福建莆田部分民房被淹、群众被困，华亭镇房屋倒塌100多间，有人员失联，救援工作紧张进行中。",
                 "source": "界面新闻",
                 "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_1576a9aa41193152",
                 "time": "2026-09-04T09:00:00",
                 "category": "突发事件",
-                "score": 93
+                "score": 92
             },
             {
-                "id": "search_tufa_4",
-                "title": "消防救援队伍在吉隆泥石流受灾区域持续推进搜寻工作",
-                "summary": "吉隆口岸核心区陆路救援通道已基本打通，消防救援队伍同步优化工作部署，全面提升吉隆泥石流救援搜寻效能。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-                "time": "2026-09-05T11:55:00",
+                "id": "search_tufa_5",
+                "title": "武警官兵福建莆田抢险救援 生命托举全网刷屏",
+                "summary": "受台风沙德尔强降水影响，福建莆田城厢区华亭镇大片区域被洪水围困，武警福建总队莆田支队紧急奔赴受灾村落开展人员搜救与群众转移工作。",
+                "source": "京报网",
+                "url": "https://www.toutiao.com/article/7682363429482480191/",
+                "time": "2026-09-06T18:13:00",
                 "category": "突发事件",
                 "score": 90
             },
             {
-                "id": "search_tufa_5",
-                "title": "应急管理部发布9月全国自然灾害风险形势",
-                "summary": "国家防灾减灾救灾委员会办公室、应急管理部会同多部门会商研判，9月有2-3个台风登陆或明显影响我国，部分地区地质灾害风险较高。",
-                "source": "人民网",
-                "url": "https://society.people.com.cn/",
-                "time": "2026-09-02T09:00:00",
+                "id": "search_tufa_6",
+                "title": "福建莆田消防转移受困群众57人",
+                "summary": "福建莆田涵江老城区积水严重，消防机动总队龙岩支队乘冲锋舟救援，自9月1日强降雨以来累计安全转移受困群众57名。",
+                "source": "央广网",
+                "url": "https://new.qq.com/rain/a/20260906A06P9400",
+                "time": "2026-09-04T09:00:00",
                 "category": "突发事件",
                 "score": 88
             },
             {
-                "id": "search_tufa_6",
-                "title": "国务院安委会办公室召开伪新能源加注站排查整治视频调度推进会",
-                "summary": "国务院安委会办公室召开视频调度推进会，部署推进伪新能源加注站排查整治工作，防范化解安全风险。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjyw/",
-                "time": "2026-09-04T09:49:00",
+                "id": "search_tufa_7",
+                "title": "郴州桂东泥石流消防增援 长沙支队紧急赶赴灾区",
+                "summary": "长沙消防救援机动支队紧急赶赴郴州桂东县泥石流灾区，随后第二批60人携装备补给跟进增援，实现受灾区域全覆盖排查搜救。",
+                "source": "潇湘晨报",
+                "url": "https://new.qq.com/rain/a/20260906A06P9400",
+                "time": "2026-09-04T09:00:00",
                 "category": "突发事件",
                 "score": 85
             },
             {
-                "id": "search_tufa_7",
-                "title": "应急管理部调派中央企业工程应急救援力量支援西藏吉隆抢险",
-                "summary": "应急管理部调派中央企业工程应急救援力量全力支持西藏吉隆泥石流灾害抢险救援，协调中国石油油品应急保供力量驰援。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-                "time": "2026-09-03T21:24:00",
+                "id": "search_tufa_8",
+                "title": "吉隆泥石流消防轮换攻坚搜寻 国家综合性消防救援队伍持续推进",
+                "summary": "国家综合性消防救援队伍在吉隆泥石流受灾区域按翻一层、搜一层、清一层标准，组建多批次轮换突击队，对联检大楼、河谷滩涂等重点区域拉网排查。",
+                "source": "政知见",
+                "url": "https://new.qq.com/rain/a/20260906A06P9400",
+                "time": "2026-09-05T09:00:00",
                 "category": "突发事件",
                 "score": 84
-            },
-            {
-                "id": "search_tufa_8",
-                "title": "国家防减救灾委调拨5000件中央救灾物资支持福建",
-                "summary": "国家防减救灾委办公室、应急管理部会同国家粮食和储备局调拨5000件中央救灾物资支持福建做好救灾救助工作。",
-                "source": "应急管理部",
-                "url": "https://www.mem.gov.cn/xw/yjglbgzdt/",
-                "time": "2026-09-03T17:54:00",
-                "category": "突发事件",
-                "score": 82
             }
         ]
     },
@@ -384,11 +384,11 @@ sections = [
         "id": "guoqi",
         "title": "🏢 国企新闻",
         "dahuStats": {
-            "total2026": 324,
+            "total2026": 328,
             "shengbu": 12,
-            "tingju": 52,
-            "xianchu": 140,
-            "others": 120,
+            "tingju": 53,
+            "xianchu": 142,
+            "others": 121,
             "updateDate": "2026年9月6日"
         },
         "items": [
@@ -416,8 +416,8 @@ sections = [
                 "id": "search_guoqi_3",
                 "title": "央企年中工作会议密集召开 下半年改革创新思路明晰",
                 "summary": "今年上半年中央企业实现利润总额1.4万亿元，固定资产投资同比增长4.5%，下半年聚焦稳增长、科技创新、产业转型等重点工作。",
-                "source": "中国能源网",
-                "url": "https://www.cnenergynews.cn/article/4SpNuJzjGGK",
+                "source": "搜狐",
+                "url": "https://www.sohu.com/a/1063763969_121925623",
                 "time": "2026-09-04T09:00:00",
                 "category": "国企新闻",
                 "score": 90
@@ -426,41 +426,41 @@ sections = [
                 "id": "search_guoqi_4",
                 "title": "国家电网上半年完成固定资产投资超3100亿元",
                 "summary": "今年上半年，国家电网累计完成固定资产投资超3100亿元，同比增长12.6%，南方电网完成投资892.62亿元，同比增长14.79%。",
-                "source": "中国能源网",
-                "url": "https://www.cnenergynews.cn/article/4SpNuJzjGGK",
-                "time": "2026-09-04T09:00:00",
+                "source": "东方财富网",
+                "url": "https://finance.eastmoney.com/a/202608313860466114.html",
+                "time": "2026-08-31T09:00:00",
                 "category": "国企新闻",
                 "score": 88
             },
             {
                 "id": "search_guoqi_5",
-                "title": "2026年国资央企高质量发展目标确定 两个确保两个力争",
-                "summary": "2026年中央企业高质量发展目标为两个确保、两个力争，确保增加值持续增长，确保一利五率经营指标稳中向好。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026年国资央企高质量发展情况/67301185",
-                "time": "2026-09-05T09:00:00",
+                "title": "前7个月利润超2.5万亿元 国企下半年发展思路明晰",
+                "summary": "财政部公布1-7月国有企业经济运行情况，营业总收入464466.4亿元，利润总额25089.9亿元，同比增长0.6%。",
+                "source": "东方财富网",
+                "url": "https://finance.eastmoney.com/a/202608313860466114.html",
+                "time": "2026-08-31T09:00:00",
                 "category": "国企新闻",
-                "score": 85
+                "score": 87
             },
             {
                 "id": "search_guoqi_6",
                 "title": "中国有色集团上半年利润总额同比增长32.1%",
                 "summary": "中国有色集团有色金属总产量101.9万吨，年化净资产收益率、全员劳动生产率、营业收现率均优于年度基准，利润总额同比增长32.1%。",
-                "source": "中国能源网",
-                "url": "https://www.cnenergynews.cn/article/4SpNuJzjGGK",
+                "source": "搜狐",
+                "url": "https://www.sohu.com/a/1063763969_121925623",
                 "time": "2026-09-04T09:00:00",
                 "category": "国企新闻",
                 "score": 84
             },
             {
                 "id": "search_guoqi_7",
-                "title": "国资委推进央企AI+专项行动 加快全国一体化算力网建设",
-                "summary": "国资央企谋划人工智能十五五战略规划，加快信息通信网络、全国一体化算力网、国产智算集群等建设，探索组建AI+产业共同体。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026年国资央企高质量发展情况/67301185",
-                "time": "2026-09-05T09:00:00",
+                "title": "1.4万亿元 央企上半年利润稳中有进 行业分化与重组整合成关键词",
+                "summary": "央企上半年利润总额1.4万亿元，行业分化与重组整合成关键词，下半年重点聚焦新能源、国防军工、基础保障等领域重组整合。",
+                "source": "重庆日报",
+                "url": "https://www.cqrb.cn/caijingzonghe/2026-07-25/2734623_pc.html",
+                "time": "2026-07-25T09:00:00",
                 "category": "国企新闻",
-                "score": 83
+                "score": 82
             }
         ]
     },
@@ -468,11 +468,11 @@ sections = [
         "id": "fuya",
         "title": "🏗 府衙招聘",
         "dahuStats": {
-            "total2026": 178,
+            "total2026": 182,
             "shengbu": 8,
-            "tingju": 30,
-            "xianchu": 78,
-            "others": 62,
+            "tingju": 31,
+            "xianchu": 80,
+            "others": 63,
             "updateDate": "2026年9月6日"
         },
         "items": [
