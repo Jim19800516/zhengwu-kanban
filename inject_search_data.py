@@ -115,6 +115,16 @@ sections = [
                 "time": "2026-09-07T15:00:00",
                 "category": "打虎台",
                 "score": 80
+            },
+            {
+                "id": "search_dahu_10",
+                "title": "中央纪委办公厅、财政部办公厅公开通报六起地方政府隐性债务追责问责典型案例",
+                "summary": "中央纪委办公厅、财政部办公厅公开通报六起地方政府隐性债务追责问责典型案例，涉及违法违规举债、化债不实等问题，对相关责任人进行严肃处理。",
+                "source": "中央纪委国家监委网站",
+                "url": "https://www.ccdi.gov.cn/?and/moban/457543i0k7dvqh.html",
+                "time": "2026-09-12T10:00:00",
+                "category": "打虎台",
+                "score": 78
             }
         ]
     },
@@ -266,7 +276,7 @@ sections = [
                 "url": "https://www.toutiao.com/article/7682974845457547819",
                 "time": "2026-09-08T09:47:00",
                 "category": "政投先机",
-                "score": 86
+                "score": 89
             },
             {
                 "id": "search_zhengtou_8",
@@ -312,7 +322,17 @@ sections = [
                 "url": "https://www.mem.gov.cn/xw/zhsgxx/",
                 "time": "2026-09-05T13:18:00",
                 "category": "突发事件",
-                "score": 92
+                "score": 93
+            },
+            {
+                "id": "search_tufa_3",
+                "title": "南海热带低压生成，海南启动防汛防风四级应急响应",
+                "summary": "9月12日上午，南海热带扰动加强为热带低压，海南省气象局发布海上台风四级预警与暴雨四级预警，省防灾减灾救灾委员会于10时启动防汛防风四级应急响应。",
+                "source": "央广网",
+                "url": "https://www.toutiao.com/article/7684496740245963274",
+                "time": "2026-09-12T12:12:00",
+                "category": "突发事件",
+                "score": 91
             },
             {
                 "id": "search_tufa_4",
@@ -378,7 +398,7 @@ sections = [
                 "url": "http://www.sasac.gov.cn/n16582853/n16582888/c35867302/content.html",
                 "time": "2026-09-04T10:00:00",
                 "category": "国企新闻",
-                "score": 95
+                "score": 96
             },
             {
                 "id": "search_guoqi_2",
