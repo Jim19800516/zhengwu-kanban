@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-搜索数据补丁 - 自动生成于 2026-09-14 22:10
+搜索数据补丁 - 自动生成于 2026-09-15 21:50
 """
 import datetime
 
@@ -9,16 +9,46 @@ sections = [
         "id": "dahu",
         "title": "🐯 打虎台",
         "dahuStats": {
-            "total2026": 5912,
+            "total2026": 5931,
             "shengbu": 24,
-            "tingju": 189,
-            "xianchu": 1301,
-            "others": 4398,
-            "updateDate": "2026年9月14日"
+            "tingju": 190,
+            "xianchu": 1305,
+            "others": 4412,
+            "updateDate": "2026年9月15日"
         },
         "items": [
             {
                 "id": "search_dahu_1",
+                "title": "山东省青岛市政府党组成员、副市长高健接受审查调查",
+                "summary": "中央纪委国家监委网站9月14日通报，青岛市政府党组成员、副市长高健涉嫌严重违纪违法，目前正接受纪律审查和监察调查。",
+                "source": "中央纪委国家监委网站",
+                "url": "https://www.ccdi.gov.cn/",
+                "time": "2026-09-14T09:30:00",
+                "category": "打虎台",
+                "score": 95
+            },
+            {
+                "id": "search_dahu_2",
+                "title": "中国国际青年交流中心有限公司原总经理黄英锋被查",
+                "summary": "黄英锋涉嫌严重违纪违法，正接受中央纪委国家监委驻中华全国总工会机关纪检监察组纪律审查和天津市监委监察调查。",
+                "source": "蚌埠发布",
+                "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_0886aa94a7849152",
+                "time": "2026-09-15T08:20:00",
+                "category": "打虎台",
+                "score": 86
+            },
+            {
+                "id": "search_dahu_3",
+                "title": "中国龙江森林工业集团原董事长李坤接受审查调查",
+                "summary": "中央纪委国家监委网站9月14日通报，中国龙江森林工业集团原董事长李坤涉嫌严重违纪违法接受审查调查。",
+                "source": "中央纪委国家监委网站",
+                "url": "https://www.ccdi.gov.cn/",
+                "time": "2026-09-14T10:10:00",
+                "category": "打虎台",
+                "score": 84
+            },
+            {
+                "id": "search_dahu_4",
                 "title": "海南省农业农村厅原厅长何琼妹被开除党籍和公职",
                 "summary": "海南省农业农村厅原党组书记、厅长何琼妹严重违纪违法被双开，涉工程项目承揽受贿，移送检察机关。",
                 "source": "中央纪委国家监委网站",
@@ -28,7 +58,7 @@ sections = [
                 "score": 88
             },
             {
-                "id": "search_dahu_2",
+                "id": "search_dahu_5",
                 "title": "四川绵阳市原副市长吴明禹被双开",
                 "summary": "四川省绵阳市政府原党组成员、副市长吴明禹严重违纪违法被双开，涉干部选拔任用受贿、项目承揽谋利。",
                 "source": "央视网",
@@ -38,322 +68,272 @@ sections = [
                 "score": 86
             },
             {
-                "id": "search_dahu_3",
-                "title": "辽宁沈阳市人大常委会原副主任曹鹏被开除党籍和公职",
-                "summary": "辽宁省沈阳市人大常委会原党组成员、副主任曹鹏严重违纪违法被双开，对抗组织审查、工程承揽受贿。",
-                "source": "中央纪委国家监委网站",
-                "url": "https://www.toutiao.com/article/7684864044260229632",
-                "time": "2026-09-13T11:57:00",
-                "category": "打虎台",
-                "score": 84
-            },
-            {
-                "id": "search_dahu_4",
-                "title": "甘肃省委原常委、原副省长雷思维严重违纪违法被开除党籍和公职",
-                "summary": "经中共中央批准，中央纪委国家监委对雷思维严重违纪违法问题立案审查调查，涉采矿权审批受贿、权色交易。",
-                "source": "中央纪委国家监委网站",
-                "url": "https://www.toutiao.com/article/7684994679066116659",
-                "time": "2026-09-13T20:25:00",
-                "category": "打虎台",
-                "score": 92
-            },
-            {
-                "id": "search_dahu_5",
-                "title": "上周四名中管干部被双开，山西省原省长金湘军一审被判死缓",
-                "summary": "9月7日至13日，王祥喜、孙绍骋、李旭、雷思维四虎被双开；金湘军一审死缓，王建军一审无期，李百安被公诉。",
-                "source": "上观新闻",
-                "url": "https://www.163.com/dy/article/L6PJ0CPE055040N3.html",
-                "time": "2026-09-14T11:15:00",
-                "category": "打虎台",
-                "score": 95
-            },
-            {
                 "id": "search_dahu_6",
-                "title": "应急管理部原党委书记、部长王祥喜严重违纪违法被开除党籍和公职",
-                "summary": "第二十届中央委员王祥喜被双开，涉工程项目承揽、职务晋升受贿，性质严重影响恶劣，待中央全会追认。",
-                "source": "中央纪委国家监委网站",
-                "url": "https://www.163.com/dy/article/L6PJ0CPE055040N3.html",
-                "time": "2026-09-08T10:00:00",
+                "title": "安徽省交通控股集团原副总经理盛明宏被开除党籍和公职",
+                "summary": "安徽纪检监察网9月14日通报，省交通控股集团原党委委员、副总经理盛明宏严重违纪违法被双开。",
+                "source": "安徽纪检监察网",
+                "url": "http://www.xcjjjc.gov.cn/News/show/1729588.html",
+                "time": "2026-09-14T11:00:00",
                 "category": "打虎台",
-                "score": 90
+                "score": 82
             },
             {
                 "id": "search_dahu_7",
-                "title": "招商局集团原副总经理李百安涉嫌受贿被公诉",
-                "summary": "招商局集团有限公司原党委委员、副总经理李百安涉嫌受贿一案，由国家监察委员会调查终结，移送检察机关审查起诉。",
+                "title": "白城医学高等专科学校原党委书记刘俊道被开除党籍",
+                "summary": "中央纪委国家监委网站9月14日通报，白城医学高等专科学校原党委书记刘俊道严重违纪违法被开除党籍。",
                 "source": "中央纪委国家监委网站",
-                "url": "https://www.163.com/dy/article/L6PJ0CPE055040N3.html",
-                "time": "2026-09-13T18:00:00",
+                "url": "http://www.xcjjjc.gov.cn/News/show/1729588.html",
+                "time": "2026-09-14T11:20:00",
                 "category": "打虎台",
-                "score": 82
+                "score": 78
             }
         ]
     },
     {
         "id": "gaoshan",
-        "title": "🏔 高山流水",
+        "title": "⛰️ 高山流水",
         "items": [
             {
                 "id": "search_gaoshan_1",
-                "title": "中央批准：李强任辽宁省委常委、大连市委书记",
-                "summary": "中央批准李强同志任辽宁省委常委、大连市委书记，免去熊茂平的辽宁省委副书记、常委和大连市委书记职务。",
-                "source": "大连发布",
-                "url": "https://www.toutiao.com/article/7684861285804147200",
-                "time": "2026-09-12T15:00:00",
+                "title": "霍步刚任辽宁省委副书记",
+                "summary": "辽宁沈阳新闻9月14日消息显示，省委常委、沈阳市委书记霍步刚已任辽宁省委副书记，1970年生，经济学博士。",
+                "source": "政事儿",
+                "url": "https://www.toutiao.com/article/7685222153377088043/",
+                "time": "2026-09-14T12:00:00",
+                "category": "高山流水",
+                "score": 93
+            },
+            {
+                "id": "search_gaoshan_2",
+                "title": "马珊珊代理沈阳市长，1979年出生有望成为全国最年轻省级政府首脑之一",
+                "summary": "财新9月15日报道，马珊珊任沈阳市代市长。其长期任职天津，曾任南开区委书记，2025年秋交流辽宁。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-15T09:00:00",
+                "category": "高山流水",
+                "score": 92
+            },
+            {
+                "id": "search_gaoshan_3",
+                "title": "教育部原副部长徐青森空降福建履新",
+                "summary": "财新9月14日报道，多省份组织部长调整，教育部副部长徐青森空降福建，出任福建省委常委、组织部部长。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-14T10:00:00",
                 "category": "高山流水",
                 "score": 90
             },
             {
-                "id": "search_gaoshan_2",
-                "title": "胡立杰任江苏省委常委、省委组织部部长",
-                "summary": "中共中央批准胡立杰同志任江苏省委委员、常委，已任江苏省委组织部部长、省委党校校长。",
-                "source": "腾讯新闻",
-                "url": "https://news.qq.com/rain/a/20260913A05BZ500",
-                "time": "2026-09-13T12:00:00",
+                "id": "search_gaoshan_4",
+                "title": "李金科任山西省委副书记，换届前山西辽宁省委副书记调整到位",
+                "summary": "财新9月15日报道，山西省委常委、秘书长李金科升任省委副书记，与霍步刚同批履新，省级班子换届临近。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-15T09:30:00",
+                "category": "高山流水",
+                "score": 88
+            },
+            {
+                "id": "search_gaoshan_5",
+                "title": "张利兼任昌都市委书记，50岁西藏副主席主政藏东",
+                "summary": "财新9月15日报道，西藏自治区副主席张利兼任昌都市委书记，仕途历经湖北、宁夏、西藏三地。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-15T10:00:00",
                 "category": "高山流水",
                 "score": 87
             },
             {
-                "id": "search_gaoshan_3",
-                "title": "王莉芬任郑州市委常委、组织部部长",
-                "summary": "王莉芬已任郑州市委常委、组织部部长、市委党校校长，此前任河南省委组织部二级巡视员。",
-                "source": "郑州日报",
-                "url": "https://news.qq.com/rain/a/20260913A05BZ500",
-                "time": "2026-09-09T10:00:00",
+                "id": "search_gaoshan_6",
+                "title": "姚华明代理大连市长，与李强在大连搭班子",
+                "summary": "财新9月15日报道，姚华明代理大连市市长。此前中央批准李强任辽宁省委常委、大连市委书记，熊茂平卸任。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-15T10:30:00",
                 "category": "高山流水",
-                "score": 80
+                "score": 87
             },
             {
-                "id": "search_gaoshan_4",
-                "title": "吴国辉任泉州市委常委、市纪委书记",
-                "summary": "吴国辉已任泉州市委常委、市纪委书记，此前任龙岩市委常委、市纪委书记、市监委主任。",
-                "source": "泉州市纪委监委",
-                "url": "https://news.qq.com/rain/a/20260913A05BZ500",
-                "time": "2026-09-11T15:00:00",
-                "category": "高山流水",
-                "score": 78
-            },
-            {
-                "id": "search_gaoshan_5",
-                "title": "江苏省委组织部发布4名省管干部任前公示",
-                "summary": "蒋锋、顾坤、刘浩拟任设区市委书记，王凯拟推荐提名为设区市市长人选，公示时间9月13日至18日。",
-                "source": "中国经济网",
-                "url": "https://district.ce.cn/newarea/sddy/202609/t20260914_3212585.shtml",
-                "time": "2026-09-14T09:00:00",
+                "id": "search_gaoshan_7",
+                "title": "赵红严任山西省委组织部部长，山西省委组织部连出四名女掌门",
+                "summary": "山西省委党校官网显示，赵红严已任省委常委、组织部部长，前任胡立杰已同岗交流江苏。",
+                "source": "财新网",
+                "url": "https://china.caixin.com/ups_and_downs/",
+                "time": "2026-09-15T11:00:00",
                 "category": "高山流水",
                 "score": 85
             },
             {
-                "id": "search_gaoshan_6",
-                "title": "广东省委组织部发布5名省管干部任前公示",
-                "summary": "李勇平拟任地级市市委书记，徐晓霞拟任地级市市委书记，刘云梅、范德繁、黎炳盛拟提名为地级市市长候选人。",
-                "source": "南方+客户端",
-                "url": "https://news.qq.com/rain/a/20260913A05BZ500",
-                "time": "2026-09-14T10:00:00",
-                "category": "高山流水",
-                "score": 83
-            },
-            {
-                "id": "search_gaoshan_7",
-                "title": "湖北省委组织部发布9位省管干部任前公示",
-                "summary": "张斐拟进一步使用，夏光宏、叶文静、江浩拟任市州正厅级领导职务，共9名干部公示。",
-                "source": "人民网湖北频道",
-                "url": "https://www.toutiao.com/article/7685236096715850280",
-                "time": "2026-09-14T12:01:00",
-                "category": "高山流水",
-                "score": 82
-            },
-            {
                 "id": "search_gaoshan_8",
-                "title": "宁夏区委组织部发布2名领导干部任前公示",
-                "summary": "王川拟提名为地级市副市长人选，刘源拟提名为县(市、区)长候选人，公示时间9月15日至20日。",
-                "source": "中国新闻网宁夏频道",
-                "url": "https://www.nx.chinanews.com/sh/2026-09-14/doc-ihfkhckz2204603.shtml",
-                "time": "2026-09-14T09:00:00",
+                "title": "广东公示：李勇平、徐晓霞拟任地级市市委书记",
+                "summary": "广东省委组织部9月14日发布公示，李勇平、徐晓霞拟进一步使用任市委书记，刘云梅等3人拟提名地级市市长候选人。",
+                "source": "中国经济网",
+                "url": "https://district.ce.cn/newarea/sddy/202609/t20260915_3214357.shtml",
+                "time": "2026-09-15T08:40:00",
+                "category": "高山流水",
+                "score": 85
+            },
+            {
+                "id": "search_gaoshan_9",
+                "title": "宁夏发布领导干部任前公示，2名80后、90后干部拟提名",
+                "summary": "宁夏区委组织部9月14日发布第19号公示，银川西夏区区长王川拟提名地级市副市长，刘源拟提名县区长候选人。",
+                "source": "宁夏党建网",
+                "url": "https://nxdjw.gov.cn/nxdjgsgg/202609/t20260914_5100702.html",
+                "time": "2026-09-14T17:00:00",
                 "category": "高山流水",
                 "score": 76
+            },
+            {
+                "id": "search_gaoshan_10",
+                "title": "贵州公示：贵阳市委常委、政法委书记许俊松拟任省直单位正职",
+                "summary": "贵州省委组织部9月13日发布公示，许俊松拟任省直单位正职，公示期至9月18日。",
+                "source": "贵州党建云",
+                "url": "https://gzzzb.gov.cn/tzgg//20260913/20260913_384928.shtml",
+                "time": "2026-09-13T22:00:00",
+                "category": "高山流水",
+                "score": 74
             }
         ]
     },
     {
         "id": "zhengtou",
-        "title": "💰 政投先机",
+        "title": "🏗️ 政投先机",
         "items": [
             {
                 "id": "search_zhengtou_1",
-                "title": "国家发改委推介36个重点项目，拟引入民间资本156亿元",
-                "summary": "国家发改委民营局推介36个项目，聚焦交通、物流、水利、能源四大领域，总投资614亿元，拟引入民资156亿元。",
-                "source": "中国经营报",
-                "url": "https://so.html5.qq.com/page/real/search_news?docid=70000021_0636aa60ded74952",
-                "time": "2026-09-10T15:00:00",
+                "title": "平陆运河9月16日正式通航，新中国成立以来首条通江达海运河",
+                "summary": "平陆运河全长134.2公里，2022年8月开工，北起南宁横州西津库区，南经钦州直通北部湾，即将实现通航。",
+                "source": "新闻联播",
+                "url": "https://gzw.sc.gov.cn/scsgzw/CU2302010/2026/9/15/a4435adca4db4a0e96e126d1c3e1e846.shtml",
+                "time": "2026-09-15T07:30:00",
                 "category": "政投先机",
-                "score": 92
+                "score": 96
             },
             {
                 "id": "search_zhengtou_2",
-                "title": "山东两大基建项目向民资敞开大门，释放20亿投资机会",
-                "summary": "威海乳山中国北方风电产业母港项目(20亿)和济宁铁路专用线项目(21.1亿)各拟引入民资10亿元。",
-                "source": "经济导报",
-                "url": "https://www.toutiao.com/article/7684804989335667234",
-                "time": "2026-09-13T08:08:00",
-                "category": "政投先机",
-                "score": 88
-            },
-            {
-                "id": "search_zhengtou_3",
-                "title": "中能建签约摩洛哥米德尔特一期光储项目EPC合同",
-                "summary": "中国能建联合体签署摩洛哥630MW光伏加1300MWh储能EPC合同，建成后将成为非洲单体规模最大光储项目。",
-                "source": "数字新能源DNE",
-                "url": "https://www.toutiao.com/article/7684883940489888282/",
-                "time": "2026-09-13T13:15:00",
+                "title": "世界最大直径高铁盾构机领航号完成二次始发",
+                "summary": "9月14日，世界最大直径高铁盾构机领航号完成二次始发，国产超大直径盾构装备再度刷新纪录。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-14T16:00:00",
                 "category": "政投先机",
                 "score": 90
             },
             {
+                "id": "search_zhengtou_3",
+                "title": "中铁二十一局津潍高铁东营南站开启铺轨",
+                "summary": "津潍高铁全长348公里、设计时速350公里，建成后将完善环渤海高铁网络，助力京津冀与山东半岛城市群联通。",
+                "source": "见道网",
+                "url": "https://m.10jqka.com.cn/20260915/c679916995.shtml",
+                "time": "2026-09-15T11:35:00",
+                "category": "政投先机",
+                "score": 88
+            },
+            {
                 "id": "search_zhengtou_4",
-                "title": "中铁系列单位中标59亿元大单，覆盖矿山升级、轨道交通等领域",
-                "summary": "中铁一局、四局、十六局、二十四局、隧道局等中标合计约59.89亿元，最大单项为恒力石墨烯项目20.83亿元。",
-                "source": "建筑业说",
-                "url": "https://k.sina.com.cn/article_5952915705_162d248f906703o5o0.html",
-                "time": "2026-09-14T09:15:00",
-                "category": "政投先机",
-                "score": 87
-            },
-            {
-                "id": "search_zhengtou_5",
-                "title": "浙江千项万亿工程中期增补212个项目，年度计划投资449.2亿元",
-                "summary": "浙江省发改委新增212个项目，先进制造业占比超五成，聚焦人工智能、低空经济、集成电路、人形机器人等领域。",
-                "source": "中国蓝新闻",
-                "url": "https://www.toutiao.com/article/7684995598952432168",
-                "time": "2026-09-13T20:27:00",
-                "category": "政投先机",
-                "score": 89
-            },
-            {
-                "id": "search_zhengtou_6",
-                "title": "3.5GW光伏项目总包中标结果出炉，涉中核、华能、三峡等央企",
-                "summary": "本周全国光伏电站总包中标37个，规模3.575GW，金额68.94亿元，环比大涨156%，中核、华能、三峡等央企项目支撑。",
-                "source": "数字新能源DNE",
-                "url": "https://k.sina.com.cn/article_5953466437_162dab0450670bc9co.html?loc=30",
-                "time": "2026-09-13T13:06:00",
-                "category": "政投先机",
-                "score": 86
-            },
-            {
-                "id": "search_zhengtou_7",
-                "title": "中国中车8英寸碳化硅晶圆线正式通线，年产能36万片",
-                "summary": "株洲中车8英寸碳化硅晶圆线2025年12月通线，覆盖600V到6500V全系列，CR450动车组完成60万公里运用考核。",
-                "source": "东方财富股吧",
-                "url": "https://guba.eastmoney.com/news,601766,1772363901.html",
-                "time": "2026-09-13T19:19:00",
+                "title": "中国能建中标新疆莎车200兆瓦/1200兆瓦时构网型独立储能项目",
+                "summary": "该项目为南疆首个6小时长时构网储能示范工程，配套220千伏升压站，年消纳弃光电量约1.1亿千瓦时。",
+                "source": "见道网",
+                "url": "https://m.10jqka.com.cn/20260915/c679916995.shtml",
+                "time": "2026-09-15T11:31:00",
                 "category": "政投先机",
                 "score": 85
             },
             {
-                "id": "search_zhengtou_8",
-                "title": "湖南株洲公示2026年重大项目前期经费第一批拟支持项目",
-                "summary": "湖南省发改委公示2026年第一批重大项目前期经费资金池拟支持项目，公示期9月14日至16日。",
-                "source": "株洲市发改委",
-                "url": "https://fgw.zhuzhou.gov.cn/c14786/20260914/i2527628.html",
-                "time": "2026-09-14T09:00:00",
+                "id": "search_zhengtou_5",
+                "title": "中国电建与贵州省签署全面深化战略合作协议",
+                "summary": "9月11日在贵阳签署，双方将在能源、水利、现代化基础设施等领域深化合作，助力贵州抢抓六张网建设机遇。",
+                "source": "北极星电力新闻网",
+                "url": "https://news.bjx.com.cn/html/20260914/1512606.shtml",
+                "time": "2026-09-14T09:58:00",
+                "category": "政投先机",
+                "score": 82
+            },
+            {
+                "id": "search_zhengtou_6",
+                "title": "长四乙火箭成功发射遥感五十三号、五十六号卫星",
+                "summary": "9月14日，长征四号乙运载火箭成功发射遥感五十三号01-03星、遥感五十六号01-03星，航天工程密集交付。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-14T15:00:00",
                 "category": "政投先机",
                 "score": 78
+            },
+            {
+                "id": "search_zhengtou_7",
+                "title": "交投生态预中标关累临港口岸物流园一期工程",
+                "summary": "交投生态联合体预中标金额2819万元，项目含地质勘察、设计与施工总承包，施工工期12个月。",
+                "source": "中国证券报",
+                "url": "https://newzzbcx.cs.com.cn/cxnews.html?name=new20260914231314cwveigua",
+                "time": "2026-09-14T23:13:00",
+                "category": "政投先机",
+                "score": 72
+            },
+            {
+                "id": "search_zhengtou_8",
+                "title": "安徽省交控集团抢抓施工窗口期，织密扩容全省高速路网",
+                "summary": "安徽交控全力推进高速公路改扩建与新建工程，加快完善长三角一体化互联互通路网格局。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-15T09:00:00",
+                "category": "政投先机",
+                "score": 70
             }
         ]
     },
     {
         "id": "tufa",
-        "title": "⚠️ 突发事件",
+        "title": "🚨 突发事件",
         "items": [
             {
                 "id": "search_tufa_1",
-                "title": "应急管理部发布2026年9月全国自然灾害风险形势",
-                "summary": "9月预计有2至3个台风登陆或明显影响我国，长江中游汉江和洞庭湖、鄱阳湖水系部分河流可能发生超警洪水。",
-                "source": "应急管理部",
-                "url": "https://yjj.yangzhou.gov.cn/ztzl/fzjz/art/2026/art_8e12e8e4e07342769d2d549f127229cc.html",
-                "time": "2026-09-12T10:00:00",
+                "title": "国务院对中国船舶集团青岛北海造船9·10重大火灾事故提级调查",
+                "summary": "9月14日，国务院决定对北海造船9·10重大火灾事故提级调查，事故调查组将彻查事故原因并依法追责。",
+                "source": "宣城纪检监察",
+                "url": "http://www.xcjjjc.gov.cn/News/show/1729588.html",
+                "time": "2026-09-14T08:00:00",
                 "category": "突发事件",
-                "score": 90
+                "score": 93
             },
             {
                 "id": "search_tufa_2",
-                "title": "新华社纪实：党中央坚强领导科学指挥2026年防汛抗洪救灾",
-                "summary": "2026年台风红霞、白海豚、沙德尔接连来袭，多地暴雨洪涝，江西遂川泥石流致16人遇难，河南启用滞洪区转移4567人。",
-                "source": "新华社",
-                "url": "https://www.toutiao.com/article/7685308452138222132/",
-                "time": "2026-09-14T16:42:00",
+                "title": "海南遭遇极端强降水，五指山日雨量615.3毫米破历史极值",
+                "summary": "9月11日至15日南海热带低压致海南16市县116乡镇雨量超200毫米，五指山单日雨量突破354.8毫米历史纪录。",
+                "source": "新海南客户端",
+                "url": "https://www.hainan.gov.cn/",
+                "time": "2026-09-15T08:00:00",
                 "category": "突发事件",
                 "score": 92
             },
             {
                 "id": "search_tufa_3",
-                "title": "江西遂川泥石流灾害致16人遇难",
-                "summary": "受台风沙德尔残余环流影响，江西遂川县高坪镇等地发生泥石流，共造成16人遇难，两部门拨付2.4亿元救灾资金。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026%E5%B9%B49%E6%9C%88%E4%B8%AD%E5%9B%BD%E6%9A%B4%E9%9B%A8/68855227",
-                "time": "2026-09-05T08:00:00",
+                "title": "云南墨江4.5级地震，普洱启动地震应急Ⅳ级响应",
+                "summary": "9月14日17时07分墨江县雅邑镇发生4.5级地震，震源深度10公里，消防24车80人赶赴震中，暂无人员伤亡报告。",
+                "source": "云南日报",
+                "url": "https://www.toutiao.com/article/7685406986053370404/",
+                "time": "2026-09-14T23:04:00",
                 "category": "突发事件",
-                "score": 89
+                "score": 88
             },
             {
                 "id": "search_tufa_4",
-                "title": "财政部、应急管理部紧急拨付2.4亿元中央自然灾害救灾资金",
-                "summary": "支持浙江、福建、江西、湖南、云南等5省做好应急抢险救灾工作，应对台风沙德尔灾害链。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026%E5%B9%B49%E6%9C%88%E4%B8%AD%E5%9B%BD%E6%9A%B4%E9%9B%A8/68855227",
-                "time": "2026-09-07T15:00:00",
+                "title": "海南省启动自然灾害救助四级应急响应",
+                "summary": "9月14日18时，海南省防灾减灾救灾委员会启动救助四级响应，4个指导组调整为防汛救灾工作组指导灾区救助。",
+                "source": "南海网",
+                "url": "https://www.hinews.cn/",
+                "time": "2026-09-14T18:00:00",
                 "category": "突发事件",
-                "score": 87
+                "score": 86
             },
             {
                 "id": "search_tufa_5",
-                "title": "湖南桂东县强降雨致2人死亡1人受伤",
-                "summary": "受台风沙德尔影响，湖南桂东县持续强降雨引发山体滑坡、泥石流，全县受灾人口10703人。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026%E5%B9%B49%E6%9C%88%E4%B8%AD%E5%9B%BD%E6%9A%B4%E9%9B%A8/68855227",
-                "time": "2026-09-05T12:00:00",
+                "title": "中老铁路部分列车因墨江地震晚点，昆明局封锁区段检查线路",
+                "summary": "地震发生后，中国铁路昆明局紧急叫停区间列车并封锁相关区段检查设备，中老铁路部分旅客列车不同程度晚点。",
+                "source": "昆明信息港",
+                "url": "https://www.toutiao.com/article/7685406986053370404/",
+                "time": "2026-09-14T23:30:00",
                 "category": "突发事件",
-                "score": 84
-            },
-            {
-                "id": "search_tufa_6",
-                "title": "四川盆地降雨增强，12个市州提前转移避险11235人",
-                "summary": "9月8日7时起四川部分市州陆续组织群众转移，至9月9日7时12个市州46个县共提前转移11235人。",
-                "source": "百度百科",
-                "url": "https://baike.baidu.com/item/2026%E5%B9%B49%E6%9C%88%E4%B8%AD%E5%9B%BD%E6%9A%B4%E9%9B%A8/68855227",
-                "time": "2026-09-08T07:00:00",
-                "category": "突发事件",
-                "score": 82
-            },
-            {
-                "id": "search_tufa_7",
-                "title": "河南舞阳县启用泥河洼滞洪区，转移安置4567人",
-                "summary": "8月10日起河南漯河遭遇持续性强降水，沙颍河漯河站流量超3000立方米每秒，启用泥河洼滞洪区转移4567人。",
-                "source": "中国政府网",
-                "url": "https://big5.www.gov.cn/gate/big5/www.gov.cn/yaowen/liebiao/202609/content_7081005.htm",
-                "time": "2026-09-12T18:00:00",
-                "category": "突发事件",
-                "score": 85
-            },
-            {
-                "id": "search_tufa_8",
-                "title": "福建提升防汛应急响应至二级，出动消防人员693人次",
-                "summary": "台风沙德尔来袭，福建防指于9月2日将防汛应急响应提升为二级，消防救援队伍共营救转移133人、疏散429人。",
-                "source": "中国政府网",
-                "url": "https://big5.www.gov.cn/gate/big5/www.gov.cn/yaowen/liebiao/202609/content_7081005.htm",
-                "time": "2026-09-02T11:00:00",
-                "category": "突发事件",
-                "score": 80
-            },
-            {
-                "id": "search_tufa_9",
-                "title": "国资委传达学习青岛北海造船厂货轮火灾事故指示精神",
-                "summary": "国务院国资委党委扩大会议学习贯彻习近平总书记对青岛北海造船厂货轮火灾事故重要指示精神，强调统筹发展和安全。",
-                "source": "国资小新",
-                "url": "https://www.163.com/dy/article/L6MK47JO0514E49C.html",
-                "time": "2026-09-11T18:00:00",
-                "category": "突发事件",
-                "score": 78
+                "score": 76
             }
         ]
     },
@@ -363,159 +343,159 @@ sections = [
         "items": [
             {
                 "id": "search_guoqi_1",
-                "title": "2026年上半年A股国资央企营收增长0.81%，利润总额增长6.20%",
-                "summary": "A股国资央企实现营收11.97万亿元，利润总额1.07万亿元，年化ROE回升至9.21%，盈利修复较为明确。",
+                "title": "广汽集团与一汽股份签署重组意向协议，央地汽车巨头开启整合",
+                "summary": "9月14日广汽公告筹划发行股份购买一汽股份旗下某整车合资公司部分股权，交易完成后一汽股份将成第二大股东。",
                 "source": "新浪财经",
-                "url": "https://stock.finance.sina.com.cn/stock/go.php/vReport_Show/kind/search/rptid/842720493110/index.phtml",
-                "time": "2026-09-14T08:00:00",
+                "url": "https://k.sina.com.cn/article_7879996653_1d5af34ed02001mnhm.html",
+                "time": "2026-09-14T23:12:00",
                 "category": "国企新闻",
-                "score": 92
+                "score": 96
             },
             {
                 "id": "search_guoqi_2",
-                "title": "国务院国资委部署加快央企行业共性技术研究院实体化建设",
-                "summary": "国资委9月3日召开座谈会，强调公益属性、应用基础研究和示范项目落地，从设机构转向出成果。",
-                "source": "中财网",
-                "url": "https://www.cfi.net.cn/p20260914000731.html",
-                "time": "2026-09-14T10:00:00",
+                "title": "国务院国资委：中央企业带头及时支付账款",
+                "summary": "国资委财管运行局负责人9月14日在国新办吹风会表示，央企将对中小企业现金支付作为硬杠杠，严禁新开6个月以上票证。",
+                "source": "新华社",
+                "url": "https://gzw.sc.gov.cn/scsgzw/CU2302010/2026/9/15/a4435adca4db4a0e96e126d1c3e1e846.shtml",
+                "time": "2026-09-15T07:00:00",
                 "category": "国企新闻",
                 "score": 90
             },
             {
                 "id": "search_guoqi_3",
-                "title": "央企中期分红总额突破7100亿元创历史同期新高",
-                "summary": "截至9月1日超800家A股公司推出中期分红方案，能源、金融、通信三大板块占六成以上，中国石油、海油、神华大手笔分红。",
-                "source": "华尔街见闻",
-                "url": "https://www.toutiao.com/article/7685286104739676678/",
-                "time": "2026-09-14T15:15:00",
+                "title": "中国海油参与投资开发的乌干达首个商业油田建设完工",
+                "summary": "9月15日国资委央企联播消息，中国海油参与投资的乌干达首个商业油田正式建设完工，中非能源合作取得标志性成果。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-15T10:00:00",
                 "category": "国企新闻",
-                "score": 88
+                "score": 90
             },
             {
                 "id": "search_guoqi_4",
-                "title": "17户中央企业23名领导人员职务任免",
-                "summary": "国务院国资委本周公布17户央企23名领导人员职务任免消息，涉及多家中央企业高层调整。",
-                "source": "国资小新",
-                "url": "https://www.163.com/dy/article/L6MK47JO0514E49C.html",
-                "time": "2026-09-12T18:00:00",
+                "title": "国务院国资委党委2026年第二轮巡视完成进驻",
+                "summary": "9月14日消息，国资委党委2026年第二轮巡视完成进驻，将对多家中央企业开展政治监督。",
+                "source": "国务院国资委",
+                "url": "http://www.sasac.gov.cn/?pexx=/",
+                "time": "2026-09-14T10:00:00",
                 "category": "国企新闻",
-                "score": 87
+                "score": 85
             },
             {
                 "id": "search_guoqi_5",
-                "title": "央企改革：政策加码产业治理，央地重组同步推进",
-                "summary": "中国石化完成对中国航油重组整合，央企降至99家；财政部3000亿元特别国债支持8家中央金融企业补充3600亿元核心一级资本。",
-                "source": "中信建投证券",
-                "url": "https://stock.finance.sina.com.cn/stock/go.php/vReport_Show/kind/lastest/rptid/842709233260/index.phtml",
-                "time": "2026-09-14T09:00:00",
+                "title": "辽宁省数据集团有限责任公司正式揭牌",
+                "summary": "9月14日，辽宁省数据集团正式揭牌成立，辽宁国资布局数字经济与数据要素市场迈出关键一步。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-14T15:30:00",
                 "category": "国企新闻",
-                "score": 89
+                "score": 82
             },
             {
                 "id": "search_guoqi_6",
-                "title": "国资e周：疆算入渝工程实现算力交付，华龙一号2.0版向全球发布",
-                "summary": "中国移动与阿里云智算中心开工；华龙一号2.0版三代加核电技术正式向全球发布推介；世界最大直径高铁盾构机领航号二次始发。",
-                "source": "国资小新",
-                "url": "https://www.163.com/dy/article/L6MK47JO0514E49C.html",
-                "time": "2026-09-12T20:00:00",
+                "title": "成都国资合伙人首场签约华住，未来3至5年投资超60亿元",
+                "summary": "成都市国资委与华住集团签署战略合作框架协议，围绕存量资产盘活、酒店管理等领域合作，拟建200家酒店。",
+                "source": "四川观察",
+                "url": "https://gzw.sc.gov.cn/scsgzw/CU2302010/2026/9/14/b3d90afe0d50496d90c31c6f037a27da.shtml",
+                "time": "2026-09-14T08:30:00",
                 "category": "国企新闻",
-                "score": 86
+                "score": 80
             },
             {
                 "id": "search_guoqi_7",
-                "title": "国央企半年报：三桶油利润两位数增长，中国石油半年净利破千亿",
-                "summary": "1至6月全国国企营收40.24万亿元同比下降2.0%，利润2.25万亿元同比增长2.4%，石油石化量稳利增，运营商量价承压。",
-                "source": "网易",
-                "url": "https://www.163.com/dy/article/L6PI6PTT05567PDM.html",
-                "time": "2026-09-14T11:01:00",
+                "title": "亚太清洁能源培训学院正式成立",
+                "summary": "9月15日消息，亚太清洁能源培训学院正式成立，将面向亚太地区开展清洁能源技术培训与能力建设合作。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-15T10:30:00",
                 "category": "国企新闻",
-                "score": 85
+                "score": 76
+            },
+            {
+                "id": "search_guoqi_8",
+                "title": "中国石化西南油气公司今年以来产气超70亿方",
+                "summary": "9月15日消息，中国石化西南油气公司年度产气量突破70亿立方米，保障川渝地区天然气稳定供应。",
+                "source": "国务院国资委",
+                "url": "http://ysp.net.sasac.gov.cn/",
+                "time": "2026-09-15T09:30:00",
+                "category": "国企新闻",
+                "score": 75
+            },
+            {
+                "id": "search_guoqi_9",
+                "title": "国航远洋与中远海能签署合作框架协议，切入油轮运输赛道",
+                "summary": "9月11日双方签约深化油散双轮驱动合作，国航远洋首次切入远程运输油轮细分赛道，开启新造油轮联合经营。",
+                "source": "东方财富",
+                "url": "https://guba.eastmoney.com/news,920571,1772865380.html",
+                "time": "2026-09-14T17:29:00",
+                "category": "国企新闻",
+                "score": 72
             }
         ]
     },
     {
         "id": "fuya",
-        "title": "📋 府衙招聘",
+        "title": "🏛️ 府衙招聘",
         "items": [
             {
                 "id": "search_fuya_1",
-                "title": "阜阳滨淮产业发展集团市场化招引副总经理及子公司总经理3人",
-                "summary": "阜阳滨淮产业发展集团面向社会公开招引副总经理1名、大数据资产运营公司总经理1名、同创投资咨询公司总经理1名。",
-                "source": "安徽华图",
-                "url": "https://ah.huatu.com/2026/0914/3283100.html",
+                "title": "汕尾市国资委市场化选聘市人才和数据科技公司董事长",
+                "summary": "面向全国选聘董事长1名，报名至9月20日，要求10年以上企业管理经历，实行任期考核差异化薪酬。",
+                "source": "汕尾市国资委",
+                "url": "https://new.qq.com/rain/a/20260914A04P2600",
                 "time": "2026-09-14T09:00:00",
-                "category": "府衙招聘",
-                "score": 88
-            },
-            {
-                "id": "search_fuya_2",
-                "title": "浙江省数据集团、国资运营公司、创新投资集团等多家国企集中招聘",
-                "summary": "浙江省数据集团、国资运营公司(科创信息部总经理)、创新投资集团及杭州城投下属11家企业共推出53个岗位58人。",
-                "source": "新浪财经",
-                "url": "https://finance.sina.com.cn/wm/2026-09-13/doc-inirskhe5579366.shtml",
-                "time": "2026-09-13T10:00:00",
-                "category": "府衙招聘",
-                "score": 87
-            },
-            {
-                "id": "search_fuya_3",
-                "title": "沈阳市文体旅产业发展集团市场化选聘总经理1名、副总经理2名",
-                "summary": "沈阳市属国企市场化选聘集团总经理1名、分管营销策划副总经理1名、分管投融资副总经理1名。",
-                "source": "培训啦网",
-                "url": "https://www.peixunla.com/gongkao/168689.html",
-                "time": "2026-09-12T15:00:00",
                 "category": "府衙招聘",
                 "score": 85
             },
             {
-                "id": "search_fuya_4",
-                "title": "西宁市城西区区属国企集团选聘总经理、总会计师等7名管理人员",
-                "summary": "面向社会及内部选聘总经理1人、总会计师1人、总法律顾问1人、副总经理3人、产业创新部部长1人。",
-                "source": "搜狐",
-                "url": "https://www.sohu.com/a/1075564582_121106869",
-                "time": "2026-09-13T09:00:00",
+                "id": "search_fuya_2",
+                "title": "阜阳滨淮产业发展集团市场化公开招引高级管理人才3名",
+                "summary": "招引集团副总经理1名及两家子公司总经理各1名，报名9月14日至10月13日，网上报名全程监督。",
+                "source": "中公教育",
+                "url": "https://www.offcn.com/sydw/2026/0914/1178880.html",
+                "time": "2026-09-14T18:37:00",
                 "category": "府衙招聘",
                 "score": 82
             },
             {
-                "id": "search_fuya_5",
-                "title": "宁波人才投资有限公司2026年第五批人员招聘",
-                "summary": "宁波人才投资公司招聘投资部高级经理、投后管理部部门经理等岗位，要求5年以上股权投资经验，CPA或CFA优先。",
-                "source": "宁波市国资委",
-                "url": "https://gzw.ningbo.gov.cn/col/col1229116730/art/2026/art_99564b3f5e7a4a3ca937a29288eed134.html",
-                "time": "2026-09-14T09:00:00",
+                "id": "search_fuya_3",
+                "title": "浙江省国有资本运营有限公司公开招聘科创信息部总经理",
+                "summary": "浙江省唯一省级国有资本运营公司招聘总部科创信息部总经理1名，实行常态化招聘直至到位。",
+                "source": "浙江发布",
+                "url": "https://k.sina.com.cn/article_5952915720_162d2490806704u044.html",
+                "time": "2026-09-14T10:00:00",
                 "category": "府衙招聘",
                 "score": 80
             },
             {
-                "id": "search_fuya_6",
-                "title": "江西遂川抽水蓄能有限公司2026年第三批次公开招聘（社招加校招）",
-                "summary": "江西省国资委旗下抽水蓄能公司开展社会招聘和校园招聘，报名截至9月24日17时。",
-                "source": "江西省国资委",
-                "url": "https://gzw.jiangxi.gov.cn/jxsgzw/rczp/content/content_2099421529416216576.html",
-                "time": "2026-09-13T10:00:00",
+                "id": "search_fuya_4",
+                "title": "曲靖师宗县公开选聘县属国企领导人员",
+                "summary": "师宗县发展投资集团面向社会公开选聘高级管理人员，9月16日起报名，含征信核查与工程廉政审查。",
+                "source": "曲靖市人社局",
+                "url": "https://rsj.qj.gov.cn/view/gsgg/146300.html",
+                "time": "2026-09-15T09:00:00",
                 "category": "府衙招聘",
                 "score": 78
             },
             {
-                "id": "search_fuya_7",
-                "title": "内蒙古第三届国企专场招聘会：70家国企提供2340个岗位",
-                "summary": "自治区国资委主办第三届内蒙古国企专场招聘会，70家驻区央企和区直盟市国企参与，涵盖新能源、装备制造等领域。",
-                "source": "内蒙古国资委",
-                "url": "https://www.toutiao.com/w/1876270788211720",
-                "time": "2026-09-14T10:01:00",
+                "id": "search_fuya_5",
+                "title": "杭州城投集团下属11家企业公开招聘58人",
+                "summary": "杭州市城投旗下水务、公交、能源、安居等11家企业推出53个岗位共58人，涵盖多个专业方向。",
+                "source": "浙江发布",
+                "url": "https://k.sina.com.cn/article_5952915720_162d2490806704u044.html",
+                "time": "2026-09-14T10:30:00",
                 "category": "府衙招聘",
-                "score": 84
+                "score": 78
             },
             {
-                "id": "search_fuya_8",
-                "title": "四川九洲君合私募基金公司招聘财务管理部负责人等岗位",
-                "summary": "绵阳市国资委旗下九洲君合私募基金公司招聘财务管理部负责人等岗位，9月14日开始报名，招满即止。",
-                "source": "绵阳市国资委",
-                "url": "https://gzw.my.gov.cn/mysgzw/c101662/202609/3e5fb8ab68c44b5eb78dc4933d1befd8.shtml",
-                "time": "2026-09-14T09:00:00",
+                "id": "search_fuya_6",
+                "title": "泰州姜堰区国企市场化选聘拟聘用人员名单公示",
+                "summary": "姜堰区国企2026年度市场化选聘经笔试面试考察等程序，9月15日起对拟聘用人员公示5天。",
+                "source": "泰州市姜堰区政府",
+                "url": "https://www.jiangyan.gov.cn/bmgg/art/2026/art_60d4e841ff5549c49cfffa659724c161.html",
+                "time": "2026-09-14T16:00:00",
                 "category": "府衙招聘",
-                "score": 76
+                "score": 72
             }
         ]
     }
