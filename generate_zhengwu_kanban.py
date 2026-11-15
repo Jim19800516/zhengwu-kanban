@@ -1245,8 +1245,12 @@ def main():
                             if item["id"] not in existing_ids:
                                 merged[sid]["items"].append(item)
                                 existing_ids.add(item["id"])
-                        # 限制每板块最多10条
-                        merged[sid]["items"] = merged[sid]["items"][:MAX_PER_SECTION]
+                        # 板块内相似标题去重（避免网页条目与搜索补丁条目同题重复）
+                        merged[sid]["items"] = deduplicate(merged[sid]["items"])
+                        # 限制每板块最多10条：搜索补丁条目按分值排序，优先于无分值的网页条目
+                        merged[sid]["items"] = sorted(
+                            merged[sid]["items"], key=lambda x: -x.get("score", 70)
+                        )[:MAX_PER_SECTION]
                     if sid == "dahu" and "dahuStats" in ss:
                         merged[sid]["dahuStats"] = ss["dahuStats"]
 
